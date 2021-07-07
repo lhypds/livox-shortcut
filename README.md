@@ -1,1 +1,3 @@
-# livox-shortcut
+# Livox Shortcut
+
+Just works
