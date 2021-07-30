@@ -2,11 +2,11 @@
 
 # set params
 # example: bash '/home/liu/Desktop/livox-shortcut/auto-calibration.sh' -i="test1" -d="20210721" -b=""
-EXPERIMENT="test1"
-DATE="20210721"
+EXPERIMENT="test4"
+DATE="20210729"
 BASE="3JEDHC900100491"
 DEVICES="/home/liu/Desktop/livox-shortcut/auto-calibration/target-devices.txt"
-RESULT="/home/liu/Desktop/livox-shortcut/auto-calibration-data/calib_result.txt"
+RESULT="/home/liu/Desktop/Experiment_$DATE/$EXPERIMENT-calib-result.txt"
 
 for i in "$@"
 do
@@ -56,11 +56,11 @@ do
 
   # real calibration execution
   NOW=$(date +"%T")
-  echo "calibration for base = ${BASE} target = $line (time = $NOW)" | tee -a "$RESULT"
+  echo "calibration for base = ${BASE} target = $line...(start = $NOW)" | tee -a "$RESULT"
   cd /home/liu/livox/github-livox-sdk/Livox_automatic_calibration/build
-  bash run.sh
+  bash run.sh -r="$RESULT"
   NOW=$(date +"%T")
-  echo "calibration complete for $line!(time = $NOW)" | tee -a "$RESULT"
+  echo "calibration complete for $line(finsh = $NOW)" | tee -a "$RESULT"
 done < "$DEVICES"
 
 NOW=$(date +"%T")
