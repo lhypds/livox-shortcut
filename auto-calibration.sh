@@ -61,6 +61,9 @@ do
   bash run.sh -r="$RESULT"
   NOW=$(date +"%T")
   echo "calibration complete for $line(finsh = $NOW)" | tee -a "$RESULT"
+
+  # copy mapping result to Experiment folder
+  cp "/home/liu/livox/github-livox-sdk/Livox_automatic_calibration/data/H-LiDAR-Map-data/H_LiDAR_Map.pcd" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}-mapping.pcd"
 done < "$DEVICES"
 
 NOW=$(date +"%T")
