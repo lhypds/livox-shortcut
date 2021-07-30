@@ -31,8 +31,8 @@ Record ROS Bag
 Auto Calibration
 ----------------
 
-1. Record ros bag
-3. ros-rosbag-to-pcd(use auto calibraton)
+1. Record ros bag (refer "Record ROS Bag")
+3. ros-rosbag-to-pcd (use auto calibraton)
 4. auto-calibration.sh
 
 
