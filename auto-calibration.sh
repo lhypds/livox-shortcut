@@ -1,11 +1,13 @@
 #!/bin/bash
-START=$(date +"%T")
 
-# Params
-# Example: bash '/home/liu/Desktop/livox-shortcut/auto-calibration.sh' -i="test1" -d="20210721" -b=""
+# set params
+# example: bash '/home/liu/Desktop/livox-shortcut/auto-calibration.sh' -i="test1" -d="20210721" -b=""
 EXPERIMENT="test1"
 DATE="20210721"
 BASE="3JEDHC900100491"
+DEVICES="/home/liu/Desktop/livox-shortcut/auto-calibration/target-devices.txt"
+RESULT="/home/liu/Desktop/livox-shortcut/auto-calibration-data/calib_result.txt"
+
 for i in "$@"
 do
 case $i in
@@ -22,11 +24,12 @@ esac
 done
 
 bash '/home/liu/Desktop/livox-shortcut/ros-driver-lvx-to-rosbag/livox-ros-driver-launch-lvx-to-rosbag-multi-topic.sh' -i="/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.lvx"
-echo "LVX convert to ROSBAG file complete..."
+echo "LVX convert to ROSBAG file complete"
 
-# Loop for one calibration
-DEVICES="/home/liu/Desktop/livox-shortcut/auto-calibration/target-devices.txt"
-echo "start auto calibration..." | tee -a '/home/liu/Desktop/livox-shortcut/auto-calibration-data/calib_result.txt'
+# loop for one calibration
+NOW=$(date +"%T")
+echo "start auto calibration...(start = $NOW)" | tee -a "$RESULT"
+
 while IFS= read -r line
 do
   bash '/home/liu/Desktop/livox-shortcut/ros-rosbag-to-pcd/ros-bag-to-pcd-for-auto-calibration.sh' -i="/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" -b="${BASE}" -t="$line"
@@ -49,15 +52,17 @@ do
     mv $file "$i.pcd"
     i=$((i+1))
   done
-  echo "complete..."
+  echo "renaming complete"
 
   # real calibration execution
-  echo "calibration for base = ${BASE} target = $line..." | tee -a '/home/liu/Desktop/livox-shortcut/auto-calibration-data/calib_result.txt'
+  NOW=$(date +"%T")
+  echo "calibration for base = ${BASE} target = $line (time = $NOW)" | tee -a "$RESULT"
   cd /home/liu/livox/github-livox-sdk/Livox_automatic_calibration/build
   bash run.sh
-  echo "calibration complete for $line!"
+  NOW=$(date +"%T")
+  echo "calibration complete for $line!(time = $NOW)" | tee -a "$RESULT"
 done < "$DEVICES"
 
-FINISH=$(date +"%T")
-echo "All calibration complete, time = $FINISH (start = $START)" | tee -a '/home/liu/Desktop/livox-shortcut/auto-calibration-data/calib_result.txt'
-xdg-open '/home/liu/Desktop/livox-shortcut/auto-calibration-data/calib_result.txt'
+NOW=$(date +"%T")
+echo "All calibration complete(finish = $NOW)" | tee -a "$RESULT"
+xdg-open "$RESULT"
