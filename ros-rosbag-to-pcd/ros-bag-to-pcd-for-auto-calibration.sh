@@ -16,7 +16,9 @@ esac
 done
 
 # Create a roscore process
-tmux new-session -d -s "roscore" roscore
+tmux new-session -d -s "roscore" -n "ROSCORE"
+sleep 1
+tmux send-key -t "roscore" 'roscore' Enter
 echo Rosbag = ${ROSBAG}
 echo Base Device = ${BASE}
 echo Target Device = ${TARGET}
