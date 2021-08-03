@@ -2,8 +2,8 @@
 
 # set params
 # example: bash '/home/liu/Desktop/livox-shortcut/auto-calibration.sh' -i="test1" -d="20210721" -b=""
-EXPERIMENT="test3"
-DATE="20210728"
+EXPERIMENT="test1"
+DATE="20210804"
 BASE="3JEDHC900100491"
 DEVICES="/home/liu/Desktop/livox-shortcut/auto-calibration/target-devices.txt"
 RESULT="/home/liu/Desktop/Experiment_$DATE/$EXPERIMENT-calib-result.txt"
@@ -32,12 +32,12 @@ gnome-terminal -x bash -c "tmux attach -t "lvx2bag"; exec bash && exit"
 
 # execute LVX to rosbag
 tmux send-key -t "lvx2bag" 'bash '/home/liu/Desktop/livox-shortcut/ros-driver-lvx-to-rosbag/livox-ros-driver-launch-lvx-to-rosbag-multi-topic.sh' -i="/home/liu/Desktop/Experiment_'${DATE}/${EXPERIMENT}'.lvx"' Enter
-sleep 5
+sleep 8
 
 # kill the show execute
 tmux send-key -t "lvx2bag" C-c
-#tmux send-key -t "lvx2bag" 'exit' Enter
-
+tmux send-key -t "lvx2bag" 'exit' Enter
+pkill gnome-terminal
 echo "LVX convert to ROSBAG file complete"
 
 # loop for one calibration
