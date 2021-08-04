@@ -3,13 +3,14 @@
 # no need to remove files, as it will all auto cleanup
 # if the first result exist, it will use it to create second result
 # if the first result and second result exist, it will mv the second to first and re-create the second
+# the target device info it put into the EXPREIMENT folder
 
 # set params
 # example: bash '/home/liu/Desktop/livox-shortcut/auto-calibration.sh' -i="test1" -d="20210721" -b=""
 EXPERIMENT="test1"
 DATE="20210804"
 BASE="3JEDHB300100641"
-DEVICES="/home/liu/Desktop/livox-shortcut/auto-calibration/target-devices.txt"
+DEVICES="/home/liu/Desktop/Experiment_$DATE/target-devices.txt"
 LOG="/home/liu/Desktop/Experiment_$DATE/$EXPERIMENT-calib-log.txt"
 THIS_RESULT="/home/liu/Desktop/Experiment_$DATE/$EXPERIMENT-calib-result.xml"
 FIRST_RESULT="/home/liu/Desktop/Experiment_$DATE/first-result.xml"
