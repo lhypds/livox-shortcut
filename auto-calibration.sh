@@ -110,6 +110,6 @@ if test -f "$FIRST_RESULT"; then
 fi
 echo "</Livox>" >> "$THIS_RESULT"
 
-spd-say "calibration complete!"
+echo "mission complete!" | espeak
 # show calibration log
 #xdg-open "$LOG"
