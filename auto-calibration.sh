@@ -87,7 +87,7 @@ do
   NOW=$(date +"%T")
   echo "calibration for base = ${BASE} target = $line...(start = $NOW)" | tee -a "$LOG"
   cd /home/liu/livox/github-livox-sdk/Livox_automatic_calibration/build
-  bash run.sh -r="/home/liu/Desktop/out/temp.txt" -l="$LOG"
+  bash /home/liu/Desktop/livox-shortcut/auto-calibration/run.sh -r="/home/liu/Desktop/out/temp.txt" -l="$LOG"
 
   # create the result
   if test -f "$FIRST_RESULT"; then
