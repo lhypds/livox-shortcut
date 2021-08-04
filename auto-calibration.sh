@@ -4,7 +4,7 @@
 # example: bash '/home/liu/Desktop/livox-shortcut/auto-calibration.sh' -i="test1" -d="20210721" -b=""
 EXPERIMENT="test1"
 DATE="20210804"
-BASE="3JEDHC900100491"
+BASE="3JEDHB300100641"
 DEVICES="/home/liu/Desktop/livox-shortcut/auto-calibration/target-devices.txt"
 LOG="/home/liu/Desktop/Experiment_$DATE/$EXPERIMENT-calib-log.txt"
 THIS_RESULT="/home/liu/Desktop/Experiment_$DATE/$EXPERIMENT-calib-result.xml"
@@ -35,7 +35,7 @@ gnome-terminal -x bash -c "tmux attach -t "lvx2bag"; exec bash && exit"
 
 # execute LVX to rosbag
 tmux send-key -t "lvx2bag" 'bash '/home/liu/Desktop/livox-shortcut/ros-driver-lvx-to-rosbag/livox-ros-driver-launch-lvx-to-rosbag-multi-topic.sh' -i="/home/liu/Desktop/Experiment_'${DATE}/${EXPERIMENT}'.lvx"' Enter
-sleep 8
+sleep 5
 
 # kill the show execute
 tmux send-key -t "lvx2bag" C-c
@@ -94,7 +94,6 @@ do
     python3 '/home/liu/Desktop/livox-shortcut/auto-calibration/calculate-result.py' $line $FIRST_RESULT >> "$SECOND_RESULT"
   fi
   python3 '/home/liu/Desktop/livox-shortcut/auto-calibration/generate-result-string.py' $line >> "$THIS_RESULT"
-  rm "/home/liu/Desktop/out/temp.txt"
 
   NOW=$(date +"%T")
   echo "calibration complete for $line(finsh = $NOW)" | tee -a "$LOG"

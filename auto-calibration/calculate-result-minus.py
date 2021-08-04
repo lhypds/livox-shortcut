@@ -4,6 +4,8 @@ import sys
 
 # sys.argv[1] is the target device ID
 # sys.argv[2] is first-result.xml path
+target = "3JEDHB300100891"
+first_result_path = "/home/liu/Desktop/Experiment_20210804/first-result.xml"
 
 # Current result
 path = '/home/liu/Desktop/out/temp.txt'
@@ -25,13 +27,13 @@ roll = float(valueStrings[3]) * 180 / math.pi
 pitch = float(valueStrings[4]) * 180 / math.pi
 yaw = float(valueStrings[5]) * 180 / math.pi
 
-# First result + current result
-path = str(sys.argv[2])
+# First result - current result
+path = first_result_path
 first_result_file = open(path, 'r')
 lines = first_result_file.readlines()
 
 for line in lines:
-    if str(sys.argv[1]) in line:
+    if target in line:
         valueForThisDeviceline = line
 
 valueStrings = valueForThisDeviceline.split(" ")
@@ -55,12 +57,12 @@ for valueString in valueStrings:
         if "e" in valueString: yaw1 = 0
         else: yaw1 = float(valueString.replace('yaw=', '').replace('\"', ''))
 
-x = x1 + x
-y = y1 + y
-z = z1 + z
-roll = roll1 + roll
-pitch = pitch1 + pitch
-yaw = yaw1 + yaw
+x = x1 - x
+y = y1 - y
+z = z1 - z
+roll = roll1 - roll
+pitch = pitch1 - pitch
+yaw = yaw1 - yaw
 
-print("  <Device roll=\"" + str(roll) + "\" pitch=\"" + str(pitch) + "\" yaw=\"" + str(yaw) + "\" x=\"" + str(x) + "\" y=\"" + str(y) + "\" z=\"" + str(z) + "\">" + str(sys.argv[1]) + "</Device>")
+print("  <Device roll=\"" + str(roll) + "\" pitch=\"" + str(pitch) + "\" yaw=\"" + str(yaw) + "\" x=\"" + str(x) + "\" y=\"" + str(y) + "\" z=\"" + str(z) + "\">" + target + "</Device>")
 
