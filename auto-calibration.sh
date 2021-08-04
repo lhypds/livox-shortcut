@@ -15,6 +15,8 @@ LOG="/home/liu/Desktop/Experiment_$DATE/$EXPERIMENT-calib-log.txt"
 THIS_RESULT="/home/liu/Desktop/Experiment_$DATE/$EXPERIMENT-calib-result.xml"
 FIRST_RESULT="/home/liu/Desktop/Experiment_$DATE/first-result.xml"
 SECOND_RESULT="/home/liu/Desktop/Experiment_$DATE/$EXPERIMENT-second-result.xml"
+USE_REMOTE_MACHINE=false
+REMOTE_IP="192.168.17.70"
 
 for i in "$@"
 do
@@ -31,6 +33,14 @@ case $i in
 esac
 done
 
+# send to remote machine to accelerate
+if $USE_REMOTE_MACHINE; then
+  echo "Sending LVX to remote..."
+  scp "/home/liu/Desktop/Experiment_'${DATE}/${EXPERIMENT}'.lvx" liu@$REMOTE_IP:/home/liu/Desktop/Experiment_'${DATE}/${EXPERIMENT}'.lvx
+  ssh liu@@$REMOTE_IP "bash /home/liu/Desktop/livox-shortcut/auto-calibration.sh"
+fi
+
+# convert to rosbag
 echo "Converting LVX to ROSBAG..."
 rm "/home/liu/Desktop/Experiment_'${DATE}/${EXPERIMENT}'.bag"
 tmux new-session -d -s "lvx2bag"
