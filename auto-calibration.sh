@@ -110,5 +110,6 @@ if test -f "$FIRST_RESULT"; then
 fi
 echo "</Livox>" >> "$THIS_RESULT"
 
+spd-say "calibration complete!"
 # show calibration log
 #xdg-open "$LOG"
