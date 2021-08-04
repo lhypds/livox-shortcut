@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# no need to remove files, as it will all auto cleanup
+# if the first result exist, it will use it to create second result
+# if the first result and second result exist, it will mv the second to first and re-create the second
+
 # set params
 # example: bash '/home/liu/Desktop/livox-shortcut/auto-calibration.sh' -i="test1" -d="20210721" -b=""
 EXPERIMENT="test1"
@@ -27,6 +31,7 @@ esac
 done
 
 echo "Converting LVX to ROSBAG..."
+rm "/home/liu/Desktop/Experiment_'${DATE}/${EXPERIMENT}'.bag"
 tmux new-session -d -s "lvx2bag"
 sleep 1
 
@@ -42,17 +47,30 @@ tmux send-key -t "lvx2bag" C-c
 tmux send-key -t "lvx2bag" 'exit' Enter
 pkill gnome-terminal
 echo "LVX convert to ROSBAG file complete"
-rm "$LOG"
 rosbag info "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" | tee -a "$LOG"
 
 # loop for one calibration
 NOW=$(date +"%T")
 echo "start auto calibration...(start = $NOW)" | tee -a "$LOG"
 rm "$THIS_RESULT"
-rm "$SECOND_RESULT"
+
+# run calibration base on previous result
 if test -f "$FIRST_RESULT"; then
+  # replace the first result with the previous second result
+  if test -f "$SECOND_RESULT"; then
+    rm "$FIRST_RESULT"
+    mv "$SECOND_RESULT" "$FIRST_RESULT"
+  fi
+
+  # re-create second result
+  rm "$SECOND_RESULT"
   echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" >> "$SECOND_RESULT"
   echo "<Livox>" >> "$SECOND_RESULT"
+fi
+
+# create current calibration result
+if test -f "$THIS_RESULT"; then
+  rm "$THIS_RESULT"
 fi
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" >> "$THIS_RESULT"
 echo "<Livox>" >> "$THIS_RESULT"

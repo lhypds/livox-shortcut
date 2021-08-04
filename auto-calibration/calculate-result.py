@@ -25,7 +25,7 @@ roll = float(valueStrings[3]) * 180 / math.pi
 pitch = float(valueStrings[4]) * 180 / math.pi
 yaw = float(valueStrings[5]) * 180 / math.pi
 
-# First result + current result
+# First result + current result, it seems the plus is correct
 path = str(sys.argv[2])
 first_result_file = open(path, 'r')
 lines = first_result_file.readlines()
