@@ -15,7 +15,7 @@ LOG="/home/liu/Desktop/Experiment_$DATE/$EXPERIMENT-calib-log.txt"
 THIS_RESULT="/home/liu/Desktop/Experiment_$DATE/$EXPERIMENT-calib-result.xml"
 FIRST_RESULT="/home/liu/Desktop/Experiment_$DATE/first-result.xml"
 SECOND_RESULT="/home/liu/Desktop/Experiment_$DATE/$EXPERIMENT-second-result.xml"
-USE_REMOTE_MACHINE=false
+USE_REMOTE_MACHINE=true
 REMOTE_IP="192.168.17.70"
 
 for i in "$@"
@@ -48,7 +48,7 @@ tmux new-session -d -s "lvx2bag"
 sleep 1
 
 # show execute
-gnome-terminal -x bash -c "cd Videos && tmux attach -t "lvx2bag"; exec bash && exit"
+gnome-terminal -x bash -c "cd ~/Videos && tmux attach -t "lvx2bag"; exec bash && exit"
 
 # execute LVX to rosbag
 tmux send-key -t "lvx2bag" 'bash '/home/liu/Desktop/livox-shortcut/ros-driver-lvx-to-rosbag/livox-ros-driver-launch-lvx-to-rosbag-multi-topic.sh' -i="/home/liu/Desktop/Experiment_'${DATE}/${EXPERIMENT}'.lvx"' Enter
