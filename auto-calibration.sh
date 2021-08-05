@@ -37,7 +37,7 @@ done
 if $USE_REMOTE_MACHINE | [ $(hostname -I) != $REMOTE_IP ]; then
   echo "Sending LVX to remote..."
   tmux new-session -d -s "send-file"
-  gnome-terminal -x bash -c "cd ~\Music && tmux attach -t "send-file"; exec bash && exit"
+  gnome-terminal -x bash -c "cd ~/Music && tmux attach -t "send-file"; exec bash && exit"
   tmux send-key -t "send-file" 'scp "/home/liu/Desktop/Experiment_'${DATE}/${EXPERIMENT}'.lvx" liu@'$REMOTE_IP':/home/liu/Desktop/Experiment_'${DATE}/${EXPERIMENT}'.lvx' Enter
 fi
 
