@@ -17,6 +17,7 @@ FIRST_RESULT="/home/liu/Desktop/Experiment_$DATE/first-result.xml"
 SECOND_RESULT="/home/liu/Desktop/Experiment_$DATE/$EXPERIMENT-second-result.xml"
 USE_REMOTE_MACHINE=false
 REMOTE_IP="192.168.17.70"
+NOW=$(date +"%T")
 
 for i in "$@"
 do
@@ -60,10 +61,10 @@ tmux send-key -t "lvx2bag" 'exit' Enter
 sleep 2
 xdotool search "~/Videos" windowclose
 echo "LVX convert to ROSBAG file complete"
+mv "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.lvx" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.lvx-$NOW"
 rosbag info "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" | tee -a "$LOG"
 
 # loop for one calibration
-NOW=$(date +"%T")
 echo "start auto calibration...(start = $NOW)" | tee -a "$LOG"
 rm "$THIS_RESULT"
 
@@ -71,12 +72,12 @@ rm "$THIS_RESULT"
 if test -f "$FIRST_RESULT"; then
   # replace the first result with the previous second result
   if test -f "$SECOND_RESULT"; then
-    rm "$FIRST_RESULT"
+    mv "$FIRST_RESULT" "$FIRST_RESULT-$NOW"
     mv "$SECOND_RESULT" "$FIRST_RESULT"
   fi
 
   # re-create second result
-  rm "$SECOND_RESULT"
+  mv "$SECOND_RESULT" "$SECOND_RESULT-$NOW"
   echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" >> "$SECOND_RESULT"
   echo "<Livox>" >> "$SECOND_RESULT"
 fi
