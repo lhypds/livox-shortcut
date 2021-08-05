@@ -52,7 +52,7 @@ gnome-terminal -x bash -c "cd ~/Videos && tmux attach -t "lvx2bag"; exec bash &&
 
 # execute LVX to rosbag
 tmux send-key -t "lvx2bag" 'bash '/home/liu/Desktop/livox-shortcut/ros-driver-lvx-to-rosbag/livox-ros-driver-launch-lvx-to-rosbag-multi-topic.sh' -i="/home/liu/Desktop/Experiment_'${DATE}/${EXPERIMENT}'.lvx"' Enter
-sleep 8
+sleep 10
 
 # kill the show execute
 tmux send-key -t "lvx2bag" C-c
