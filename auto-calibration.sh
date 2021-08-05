@@ -15,7 +15,7 @@ LOG="/home/liu/Desktop/Experiment_$DATE/$EXPERIMENT-calib-log.txt"
 THIS_RESULT="/home/liu/Desktop/Experiment_$DATE/$EXPERIMENT-calib-result.xml"
 FIRST_RESULT="/home/liu/Desktop/Experiment_$DATE/first-result.xml"
 SECOND_RESULT="/home/liu/Desktop/Experiment_$DATE/$EXPERIMENT-second-result.xml"
-USE_REMOTE_MACHINE=true
+USE_REMOTE_MACHINE=false
 REMOTE_IP="192.168.17.70"
 
 for i in "$@"
@@ -37,7 +37,7 @@ done
 if $USE_REMOTE_MACHINE | [ $(hostname -I) != $REMOTE_IP ]; then
   echo "Sending LVX to remote..."
   tmux new-session -d -s "send-file"
-  gnome-terminal -x bash -c "cd ~/Music && tmux attach -t "send-file"; exec bash && exit"
+  gnome-terminal -x bash -c "tmux attach -t "send-file"; exec bash && exit"
   tmux send-key -t "send-file" 'scp "/home/liu/Desktop/Experiment_'${DATE}/${EXPERIMENT}'.lvx" liu@'$REMOTE_IP':/home/liu/Desktop/Experiment_'${DATE}/${EXPERIMENT}'.lvx' Enter
 fi
 
