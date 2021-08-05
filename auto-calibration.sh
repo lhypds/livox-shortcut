@@ -34,7 +34,7 @@ esac
 done
 
 # send to remote machine to accelerate
-if $USE_REMOTE_MACHINE | [ $(hostname -I) != $REMOTE_IP ]; then
+if $USE_REMOTE_MACHINE && [ $(hostname -I) != $REMOTE_IP ]; then
   echo "Sending LVX to remote..."
   tmux new-session -d -s "send-file"
   gnome-terminal -x bash -c "tmux attach -t "send-file"; exec bash && exit"
