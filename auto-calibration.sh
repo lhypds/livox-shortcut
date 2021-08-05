@@ -43,7 +43,7 @@ fi
 
 # convert to rosbag
 echo "Converting LVX to ROSBAG..."
-rm "/home/liu/Desktop/Experiment_'${DATE}/${EXPERIMENT}'.bag"
+rm "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag"
 tmux new-session -d -s "lvx2bag"
 sleep 1
 
