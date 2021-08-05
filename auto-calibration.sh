@@ -8,7 +8,7 @@
 # set params
 # example: bash '/home/liu/Desktop/livox-shortcut/auto-calibration.sh' -i="test1" -d="20210721" -b=""
 EXPERIMENT="test1"
-DATE="20210804"
+DATE="20210805"
 BASE="3JEDHB300100641"
 DEVICES="/home/liu/Desktop/Experiment_$DATE/target-devices.txt"
 LOG="/home/liu/Desktop/Experiment_$DATE/$EXPERIMENT-calib-log.txt"
@@ -34,10 +34,11 @@ esac
 done
 
 # send to remote machine to accelerate
-if $USE_REMOTE_MACHINE; then
+if $USE_REMOTE_MACHINE | [ $(hostname -I) != $REMOTE_IP ]; then
   echo "Sending LVX to remote..."
-  scp "/home/liu/Desktop/Experiment_'${DATE}/${EXPERIMENT}'.lvx" liu@$REMOTE_IP:/home/liu/Desktop/Experiment_'${DATE}/${EXPERIMENT}'.lvx
-  ssh liu@@$REMOTE_IP "bash /home/liu/Desktop/livox-shortcut/auto-calibration.sh"
+  tmux new-session -d -s "send-file"
+  gnome-terminal -x bash -c "cd Music && tmux attach -t "send-file"; exec bash && exit"
+  tmux send-key -t "send-file" 'scp "/home/liu/Desktop/Experiment_'${DATE}/${EXPERIMENT}'.lvx" liu@'$REMOTE_IP':/home/liu/Desktop/Experiment_'${DATE}/${EXPERIMENT}'.lvx' Enter
 fi
 
 # convert to rosbag
@@ -47,7 +48,7 @@ tmux new-session -d -s "lvx2bag"
 sleep 1
 
 # show execute
-gnome-terminal -x bash -c "tmux attach -t "lvx2bag"; exec bash && exit"
+gnome-terminal -x bash -c "cd Videos && tmux attach -t "lvx2bag"; exec bash && exit"
 
 # execute LVX to rosbag
 tmux send-key -t "lvx2bag" 'bash '/home/liu/Desktop/livox-shortcut/ros-driver-lvx-to-rosbag/livox-ros-driver-launch-lvx-to-rosbag-multi-topic.sh' -i="/home/liu/Desktop/Experiment_'${DATE}/${EXPERIMENT}'.lvx"' Enter
@@ -56,7 +57,8 @@ sleep 5
 # kill the show execute
 tmux send-key -t "lvx2bag" C-c
 tmux send-key -t "lvx2bag" 'exit' Enter
-pkill gnome-terminal
+sleep 2
+xdotool search "~/Videos" windowclose
 echo "LVX convert to ROSBAG file complete"
 rosbag info "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" | tee -a "$LOG"
 
