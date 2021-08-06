@@ -19,7 +19,7 @@ USE_REMOTE_MACHINE=false
 REMOTE_IP="192.168.17.70"
 NOW=$(date +"%T")
 USE_LVX=false
-BYPASS_ROSBAG=false
+BYPASS_ROSBAG=true
 
 for i in "$@"
 do
@@ -102,7 +102,11 @@ echo "<Livox>" >> "$THIS_RESULT"
 
 while IFS= read -r line
 do
-  if !$BYPASS_ROSBAG; then
+  if $BYPASS_ROSBAG; then
+    echo "Bypass rosbag..."
+  fi
+
+  if ! $BYPASS_ROSBAG; then
     echo "Rosbag topic separating..."
     bash '/home/liu/Desktop/livox-shortcut/ros-rosbag-to-pcd/ros-bag-to-pcd-for-auto-calibration.sh' -i="/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" -b="${BASE}" -t="$line"
     echo "Rosbag topic separating complete"
