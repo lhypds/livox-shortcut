@@ -113,7 +113,7 @@ do
 
     # backup rosbag
     echo "Rosbag backup..."
-    mv "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag-$NOW"
+    cp "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag-$NOW"
 
     # rename all files in Base_LiDAR_Frames
     echo "Renaming files..."
