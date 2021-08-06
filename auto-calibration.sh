@@ -19,6 +19,7 @@ USE_REMOTE_MACHINE=false
 REMOTE_IP="192.168.17.70"
 NOW=$(date +"%T")
 USE_LVX=false
+BYPASS_ROSBAG=false
 
 for i in "$@"
 do
@@ -101,33 +102,35 @@ echo "<Livox>" >> "$THIS_RESULT"
 
 while IFS= read -r line
 do
-  echo "Rosbag topic separating..."
-  bash '/home/liu/Desktop/livox-shortcut/ros-rosbag-to-pcd/ros-bag-to-pcd-for-auto-calibration.sh' -i="/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" -b="${BASE}" -t="$line"
-  echo "Rosbag topic separating complete"
+  if !$BYPASS_ROSBAG; then
+    echo "Rosbag topic separating..."
+    bash '/home/liu/Desktop/livox-shortcut/ros-rosbag-to-pcd/ros-bag-to-pcd-for-auto-calibration.sh' -i="/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" -b="${BASE}" -t="$line"
+    echo "Rosbag topic separating complete"
 
-  # backup rosbag
-  echo "Rosbag backup..."
-  mv "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag-$NOW"
+    # backup rosbag
+    echo "Rosbag backup..."
+    mv "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag-$NOW"
 
-  # rename all files in Base_LiDAR_Frames
-  echo "Renaming files..."
-  cd /home/liu/livox/github-livox-sdk/Livox_automatic_calibration/data/Base_LiDAR_Frames
-  i=100000
-  for file in $(find * -name '*.pcd' | sort)
-  do
-    mv $file "$i.pcd"
-    i=$((i+1))
-  done
+    # rename all files in Base_LiDAR_Frames
+    echo "Renaming files..."
+    cd /home/liu/livox/github-livox-sdk/Livox_automatic_calibration/data/Base_LiDAR_Frames
+    i=100000
+    for file in $(find * -name '*.pcd' | sort)
+    do
+      mv $file "$i.pcd"
+      i=$((i+1))
+    done
 
-  # rename all files in Target-LiDAR-Frames
-  cd /home/liu/livox/github-livox-sdk/Livox_automatic_calibration/data/Target-LiDAR-Frames
-  i=100000
-  for file in $(find * -name '*.pcd' | sort)
-  do
-    mv $file "$i.pcd"
-    i=$((i+1))
-  done
-  echo "Renaming complete"
+    # rename all files in Target-LiDAR-Frames
+    cd /home/liu/livox/github-livox-sdk/Livox_automatic_calibration/data/Target-LiDAR-Frames
+    i=100000
+    for file in $(find * -name '*.pcd' | sort)
+    do
+      mv $file "$i.pcd"
+      i=$((i+1))
+    done
+    echo "Renaming complete"
+  fi
 
   # real calibration execution
   NOW=$(date +"%T")
