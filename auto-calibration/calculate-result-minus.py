@@ -5,7 +5,7 @@ import sys
 # sys.argv[1] is the target device ID
 # sys.argv[2] is first-result.xml path
 target = "3JEDHB300100891"
-first_result_path = "/home/liu/Desktop/Experiment_20210804/first-result.xml"
+first_result_path = "/home/liu/Desktop/Experiment_20210805/first-result.xml"
 
 # Current result
 path = '/home/liu/Desktop/out/temp.txt'

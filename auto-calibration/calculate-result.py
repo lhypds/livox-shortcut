@@ -25,7 +25,7 @@ roll = float(valueStrings[3]) * 180 / math.pi
 pitch = float(valueStrings[4]) * 180 / math.pi
 yaw = float(valueStrings[5]) * 180 / math.pi
 
-# First result + current result, it seems the plus is correct
+# First result - this result
 path = str(sys.argv[2])
 first_result_file = open(path, 'r')
 lines = first_result_file.readlines()
@@ -55,11 +55,11 @@ for valueString in valueStrings:
         if "e" in valueString: yaw1 = 0
         else: yaw1 = float(valueString.replace('yaw=', '').replace('\"', ''))
 
-x = x1 + x
-y = y1 + y
-z = z1 + z
-roll = roll1 + roll
-pitch = pitch1 + pitch
+x = x1 - x
+y = y1 - y
+z = z1 - z
+roll = roll1 - roll
+pitch = pitch1 - pitch
 yaw = yaw1 + yaw
 
 print("  <Device roll=\"" + str(roll) + "\" pitch=\"" + str(pitch) + "\" yaw=\"" + str(yaw) + "\" x=\"" + str(x) + "\" y=\"" + str(y) + "\" z=\"" + str(z) + "\">" + str(sys.argv[1]) + "</Device>")

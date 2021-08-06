@@ -71,18 +71,23 @@ rosbag info "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" | tee -a "$
 
 # loop for one calibration
 echo "start auto calibration...(start = $NOW)" | tee -a "$LOG"
-rm "$THIS_RESULT"
+
+# cleanup previous result
+if test -f "$THIS_RESULT"; then
+  rm "$THIS_RESULT"
+fi
 
 # run calibration base on previous result
 if test -f "$FIRST_RESULT"; then
   # replace the first result with the previous second result
   if test -f "$SECOND_RESULT"; then
     mv "$FIRST_RESULT" "$FIRST_RESULT-$NOW"
+
+    # re-create second result
+    mv "$SECOND_RESULT" "$SECOND_RESULT-$NOW"
     mv "$SECOND_RESULT" "$FIRST_RESULT"
   fi
 
-  # re-create second result
-  mv "$SECOND_RESULT" "$SECOND_RESULT-$NOW"
   echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" >> "$SECOND_RESULT"
   echo "<Livox>" >> "$SECOND_RESULT"
 fi
@@ -99,6 +104,10 @@ do
   echo "Rosbag topic separating..."
   bash '/home/liu/Desktop/livox-shortcut/ros-rosbag-to-pcd/ros-bag-to-pcd-for-auto-calibration.sh' -i="/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" -b="${BASE}" -t="$line"
   echo "Rosbag topic separating complete"
+
+  # backup rosbag
+  echo "Rosbag backup..."
+  mv "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag-$NOW"
 
   # rename all files in Base_LiDAR_Frames
   echo "Renaming files..."
