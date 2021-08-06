@@ -18,6 +18,7 @@ SECOND_RESULT="/home/liu/Desktop/Experiment_$DATE/$EXPERIMENT-second-result.xml"
 USE_REMOTE_MACHINE=false
 REMOTE_IP="192.168.17.70"
 NOW=$(date +"%T")
+USE_LVX=false
 
 for i in "$@"
 do
@@ -43,25 +44,29 @@ if $USE_REMOTE_MACHINE && [ $(hostname -I) != $REMOTE_IP ]; then
 fi
 
 # convert to rosbag
-echo "Converting LVX to ROSBAG..."
-rm "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag"
-tmux new-session -d -s "lvx2bag"
-sleep 1
+if $USE_LVX; then
+  echo "Converting LVX to ROSBAG..."
+  rm "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag"
+  tmux new-session -d -s "lvx2bag"
+  sleep 1
 
-# show execute
-gnome-terminal -x bash -c "cd ~/Videos && tmux attach -t "lvx2bag"; exec bash && exit"
+  # show execute
+  gnome-terminal -x bash -c "cd ~/Videos && tmux attach -t "lvx2bag"; exec bash && exit"
 
-# execute LVX to rosbag
-tmux send-key -t "lvx2bag" 'bash '/home/liu/Desktop/livox-shortcut/ros-driver-lvx-to-rosbag/livox-ros-driver-launch-lvx-to-rosbag-multi-topic.sh' -i="/home/liu/Desktop/Experiment_'${DATE}/${EXPERIMENT}'.lvx"' Enter
-sleep 10
+  # execute LVX to rosbag
+  tmux send-key -t "lvx2bag" 'bash '/home/liu/Desktop/livox-shortcut/ros-driver-lvx-to-rosbag/livox-ros-driver-launch-lvx-to-rosbag-multi-topic.sh' -i="/home/liu/Desktop/Experiment_'${DATE}/${EXPERIMENT}'.lvx"' Enter
+  sleep 10
 
-# kill the show execute
-tmux send-key -t "lvx2bag" C-c
-tmux send-key -t "lvx2bag" 'exit' Enter
-sleep 2
-xdotool search "~/Videos" windowclose
-echo "LVX convert to ROSBAG file complete"
-mv "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.lvx" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.lvx-$NOW"
+  # kill the show execute
+  tmux send-key -t "lvx2bag" C-c
+  tmux send-key -t "lvx2bag" 'exit' Enter
+  sleep 2
+  xdotool search "~/Videos" windowclose
+  echo "LVX convert to ROSBAG file complete"
+  mv "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.lvx" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.lvx-$NOW"
+fi
+
+# show rosbag info
 rosbag info "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" | tee -a "$LOG"
 
 # loop for one calibration
