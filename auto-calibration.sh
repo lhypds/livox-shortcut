@@ -19,7 +19,7 @@ USE_REMOTE_MACHINE=false
 REMOTE_IP="192.168.17.70"
 NOW=$(date +"%T")
 USE_LVX=false
-BYPASS_ROSBAG=true
+BYPASS_ROSBAG=false
 
 for i in "$@"
 do
@@ -85,7 +85,7 @@ if test -f "$FIRST_RESULT"; then
     mv "$FIRST_RESULT" "$FIRST_RESULT-$NOW"
 
     # re-create second result
-    mv "$SECOND_RESULT" "$SECOND_RESULT-$NOW"
+    cp "$SECOND_RESULT" "$SECOND_RESULT-$NOW"
     mv "$SECOND_RESULT" "$FIRST_RESULT"
   fi
 
