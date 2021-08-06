@@ -60,7 +60,7 @@ y = y1 - y
 z = z1 - z
 roll = roll1 - roll
 pitch = pitch1 - pitch
-yaw = yaw1 + yaw
+yaw = yaw1 - yaw
 
 print("  <Device roll=\"" + str(roll) + "\" pitch=\"" + str(pitch) + "\" yaw=\"" + str(yaw) + "\" x=\"" + str(x) + "\" y=\"" + str(y) + "\" z=\"" + str(z) + "\">" + str(sys.argv[1]) + "</Device>")
 
