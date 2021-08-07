@@ -4,11 +4,14 @@
 # if the first result exist, it will use it to create second result
 # if the first result and second result exist, it will mv the second to first and re-create the second
 # the target device info it put into the EXPREIMENT folder
-USE_LVX=true
-USE_ROSBAG=false
+USE_LVX=false
+USE_ROSBAG=true
 
 RED='\033[0;31m'
+BLUE='\033[0;34m'
+GREEN='\033[0;32m'
 NC='\033[0m' # No Color
+
 NOW=$(date +"%T")
 
 # set params
@@ -45,13 +48,14 @@ REMOTE_IP="192.168.17.70"
 # 1. convert lvx to rosbag
 if $USE_LVX; then
   if ! test -f "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.lvx"; then
-    echo -e "${RED}LVX file not exist, record LVX or disbale USE_LVX"
-    echo -e "${NC}Exiting..."
+    echo -e "${RED}LVX file not exist, record LVX or disbale USE_LVX${NC}"
     exit
   fi
 
   echo "Converting LVX to ROSBAG..."
-  mv "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag-$NOW"
+  if test -f "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag"; then
+    mv "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag-$NOW"
+  fi
   tmux new-session -d -s "lvx2bag"
   sleep 1
 
@@ -67,7 +71,7 @@ if $USE_LVX; then
   tmux send-key -t "lvx2bag" 'exit' Enter
   sleep 2
   xdotool search "~/Videos" windowclose
-  echo "LVX convert to ROSBAG file complete"
+  echo -e "${GREEN}LVX convert to ROSBAG file complete${NC}"
 
   # backup the LVX file
   mv "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.lvx" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.lvx-$NOW"
@@ -75,6 +79,11 @@ fi
 
 # 2. convert rosbag to pcd (base and target folder)
 if $USE_ROSBAG; then
+  if ! test -f "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag"; then
+    echo -e "${RED}ROSBAG file not exist, record ROSBAG or convert from LVX or disbale USE_ROSBAG${NC}"
+    exit
+  fi
+
   while IFS= read -r line
   do
     echo "Start processing for target device ID $line"
@@ -167,7 +176,7 @@ while [ "$key" != "" ]
 do
   read key
 done
-echo "All calibration complete(finish = $NOW)" | tee -a "$LOG"
+echo "${GREEN}All calibration complete(finish = $NOW)${NC}" | tee -a "$LOG"
 
 # copy mapping result to Experiment folder
 cp "/home/liu/livox/github-livox-sdk/Livox_automatic_calibration/1/data/H-LiDAR-Map-data/H_LiDAR_Map.pcd" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}-mapping.pcd"

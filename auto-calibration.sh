@@ -8,7 +8,10 @@ USE_LVX=false
 USE_ROSBAG=true
 
 RED='\033[0;31m'
+BLUE='\033[0;34m'
+GREEN='\033[0;32m'
 NC='\033[0m' # No Color
+
 NOW=$(date +"%T")
 
 # set params
@@ -45,13 +48,14 @@ REMOTE_IP="192.168.17.70"
 # 1. convert lvx to rosbag
 if $USE_LVX; then
   if ! test -f "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.lvx"; then
-    echo -e "${RED}LVX file not exist, record LVX or disbale USE_LVX"
-    echo -e "${NC}Exiting..."
+    echo -e "${RED}LVX file not exist, record LVX or disbale USE_LVX${NC}"
     exit
   fi
 
   echo "Converting LVX to ROSBAG..."
-  rm "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag"
+  if test -f "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag"; then
+    mv "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag-$NOW"
+  fi
   tmux new-session -d -s "lvx2bag"
   sleep 1
 
@@ -67,13 +71,13 @@ if $USE_LVX; then
   tmux send-key -t "lvx2bag" 'exit' Enter
   sleep 2
   xdotool search "~/Videos" windowclose
-  echo "LVX convert to ROSBAG file complete"
+  echo -e "${GREEN}LVX convert to ROSBAG file complete${NC}"
 
   # backup the LVX file
   mv "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.lvx" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.lvx-$NOW"
 fi
 
-# run calibration base on previous result
+# prepare the result file
 if test -f "$FIRST_RESULT"; then
   # replace the first result with the previous second result
   if test -f "$SECOND_RESULT"; then
@@ -103,12 +107,17 @@ do
 
   # 2.1 rosbag to pcd (base and target folder)
   if $USE_ROSBAG; then
+    if ! test -f "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag"; then
+      echo -e "${RED}ROSBAG file not exist, record ROSBAG or convert from LVX or disbale USE_ROSBAG${NC}"
+      exit
+    fi
+
     # show rosbag info
     rosbag info "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" | tee -a "$LOG"
 
     echo "Rosbag topic separating..."
     bash '/home/liu/Desktop/livox-shortcut/ros-rosbag-to-pcd/ros-bag-to-pcd-for-auto-calibration.sh' -i="/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" -b="${BASE}" -t="$line"
-    echo "Rosbag topic separating complete"
+    echo -e "${GREEN}Rosbag topic separating complete${NC}"
 
     # rename all files in Base_LiDAR_Frames
     echo "Renaming files..."
@@ -128,7 +137,7 @@ do
       mv $file "$i.pcd"
       i=$((i+1))
     done
-    echo "Renaming complete"
+    echo -e "Renaming complete"
   fi
 
   # 2.2 calibration execution
@@ -143,11 +152,11 @@ do
   python3 '/home/liu/Desktop/livox-shortcut/auto-calibration/generate-result-string.py' $line >> "$THIS_RESULT"
 
   NOW=$(date +"%T")
-  echo "calibration complete for $line(finsh = $NOW)" | tee -a "$LOG"
+  echo -e "${GREEN}calibration complete for $line(finsh = $NOW)${NC}" | tee -a "$LOG"
 done < "$DEVICES"
 
 NOW=$(date +"%T")
-echo "All calibration complete(finish = $NOW)" | tee -a "$LOG"
+echo -e "${GREEN}All calibration complete(finish = $NOW)${NC}" | tee -a "$LOG"
 
 # complete result
 if test -f "$FIRST_RESULT"; then
@@ -161,4 +170,4 @@ cp "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" "/home/liu/Desktop/E
 # copy mapping result to Experiment folder
 cp "/home/liu/livox/github-livox-sdk/Livox_automatic_calibration/data/H-LiDAR-Map-data/H_LiDAR_Map.pcd" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}-mapping.pcd"
 
-echo "calibration complete!" | espeak
+echo -e "${GREEN}calibration complete!${NC}" | espeak
