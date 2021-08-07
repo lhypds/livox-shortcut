@@ -177,7 +177,9 @@ espeak "Calibration complete"
 
 # print result
 if test -f "$SECOND_RESULT"; then
+  echo "$SECOND_RESULT"
   cat "$SECOND_RESULT"
 else
+  echo "$THIS_RESULT"
   cat "$THIS_RESULT"
 fi

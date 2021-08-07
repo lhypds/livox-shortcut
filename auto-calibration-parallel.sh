@@ -45,98 +45,98 @@ SECOND_RESULT="/home/liu/Desktop/Experiment_$DATE/$EXPERIMENT-second-result.xml"
 # remote machine
 REMOTE_IP="192.168.17.70"
 
-# # cleanup
-# rm -rf /home/liu/Desktop/out/*
+# cleanup
+rm -rf /home/liu/Desktop/out/*
 
-# # 1. convert lvx to rosbag
-# if $USE_LVX; then
-#   if ! test -f "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.lvx"; then
-#     echo -e "${RED}LVX file not exist, record LVX or disbale USE_LVX${NC}"
-#     exit
-#   fi
+# 1. convert lvx to rosbag
+if $USE_LVX; then
+  if ! test -f "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.lvx"; then
+    echo -e "${RED}LVX file not exist, record LVX or disbale USE_LVX${NC}"
+    exit
+  fi
 
-#   echo "Converting LVX to ROSBAG..."
-#   if test -f "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag"; then
-#     mv "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag-$NOW"
-#   fi
-#   tmux new-session -d -s "lvx2bag"
-#   sleep 1
+  echo "Converting LVX to ROSBAG..."
+  if test -f "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag"; then
+    mv "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag-$NOW"
+  fi
+  tmux new-session -d -s "lvx2bag"
+  sleep 1
 
-#   # show execute
-#   gnome-terminal -x bash -c "cd ~/Videos && tmux attach -t "lvx2bag"; exec bash && exit"
+  # show execute
+  gnome-terminal -x bash -c "cd ~/Videos && tmux attach -t "lvx2bag"; exec bash && exit"
 
-#   # execute LVX to rosbag
-#   tmux send-key -t "lvx2bag" 'bash '/home/liu/Desktop/livox-shortcut/ros-driver-lvx-to-rosbag/livox-ros-driver-launch-lvx-to-rosbag-multi-topic.sh' -i="/home/liu/Desktop/Experiment_'${DATE}/${EXPERIMENT}'.lvx"' Enter
-#   sleep 10
+  # execute LVX to rosbag
+  tmux send-key -t "lvx2bag" 'bash '/home/liu/Desktop/livox-shortcut/ros-driver-lvx-to-rosbag/livox-ros-driver-launch-lvx-to-rosbag-multi-topic.sh' -i="/home/liu/Desktop/Experiment_'${DATE}/${EXPERIMENT}'.lvx"' Enter
+  sleep 10
 
-#   # kill the show execute
-#   tmux send-key -t "lvx2bag" C-c
-#   tmux send-key -t "lvx2bag" 'exit' Enter
-#   sleep 2
-#   xdotool search "~/Videos" windowclose
-#   echo -e "${GREEN}LVX convert to ROSBAG file complete${NC}"
+  # kill the show execute
+  tmux send-key -t "lvx2bag" C-c
+  tmux send-key -t "lvx2bag" 'exit' Enter
+  sleep 2
+  xdotool search "~/Videos" windowclose
+  echo -e "${GREEN}LVX convert to ROSBAG file complete${NC}"
 
-#   # backup the LVX file
-#   mv "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.lvx" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.lvx-$NOW"
-# fi
+  # backup the LVX file
+  mv "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.lvx" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.lvx-$NOW"
+fi
 
-# # 2. convert rosbag to pcd (base and target folder)
-# if $USE_ROSBAG; then
-#   if ! test -f "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag"; then
-#     echo -e "${RED}ROSBAG file not exist, record ROSBAG or convert from LVX or disbale USE_ROSBAG${NC}"
-#     exit
-#   fi
+# 2. convert rosbag to pcd (base and target folder)
+if $USE_ROSBAG; then
+  if ! test -f "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag"; then
+    echo -e "${RED}ROSBAG file not exist, record ROSBAG or convert from LVX or disbale USE_ROSBAG${NC}"
+    exit
+  fi
 
-#   # show rosbag info
-#   rosbag info "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" | tee -a "$LOG"
+  # show rosbag info
+  rosbag info "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" | tee -a "$LOG"
 
-#   echo "Start converting ROSBAG to PCD"
-#   INSTANCE=1
-#   while IFS= read -r line
-#   do
-#     echo -e "${BLUE}Convert ROSBAG to PCD for device $line (Instance $INSTANCE)${NC}"
+  echo "Start converting ROSBAG to PCD"
+  INSTANCE=1
+  while IFS= read -r line
+  do
+    echo -e "${BLUE}Convert ROSBAG to PCD for device $line (Instance $INSTANCE)${NC}"
 
-#     echo "Rosbag topic separating..."
-#     bash '/home/liu/Desktop/livox-shortcut/ros-rosbag-to-pcd/ros-bag-to-pcd-for-auto-calibration-parallel.sh' -i="/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" -b="${BASE}" -t="$line" -p="$INSTANCE"
-#     echo "Rosbag topic separating complete"
+    echo "Rosbag topic separating..."
+    bash '/home/liu/Desktop/livox-shortcut/ros-rosbag-to-pcd/ros-bag-to-pcd-for-auto-calibration-parallel.sh' -i="/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" -b="${BASE}" -t="$line" -p="$INSTANCE"
+    echo "Rosbag topic separating complete"
 
-#     # rename all files in Base_LiDAR_Frames
-#     echo "Renaming files..."
-#     cd /home/liu/livox/github-livox-sdk/Livox_automatic_calibration_parallel/$INSTANCE/data/Base_LiDAR_Frames
-#     i=100000
-#     for file in $(find * -name '*.pcd' | sort)
-#     do
-#       mv $file "$i.pcd"
-#       i=$((i+1))
-#     done
+    # rename all files in Base_LiDAR_Frames
+    echo "Renaming files..."
+    cd /home/liu/livox/github-livox-sdk/Livox_automatic_calibration_parallel/$INSTANCE/data/Base_LiDAR_Frames
+    i=100000
+    for file in $(find * -name '*.pcd' | sort)
+    do
+      mv $file "$i.pcd"
+      i=$((i+1))
+    done
 
-#     # rename all files in Target-LiDAR-Frames
-#     cd /home/liu/livox/github-livox-sdk/Livox_automatic_calibration_parallel/$INSTANCE/data/Target-LiDAR-Frames
-#     i=100000
-#     for file in $(find * -name '*.pcd' | sort)
-#     do
-#       mv $file "$i.pcd"
-#       i=$((i+1))
-#     done
-#     echo "Renaming complete"
+    # rename all files in Target-LiDAR-Frames
+    cd /home/liu/livox/github-livox-sdk/Livox_automatic_calibration_parallel/$INSTANCE/data/Target-LiDAR-Frames
+    i=100000
+    for file in $(find * -name '*.pcd' | sort)
+    do
+      mv $file "$i.pcd"
+      i=$((i+1))
+    done
+    echo "Renaming complete"
 
-#     INSTANCE=$((INSTANCE+1))
-#   done < "$DEVICES"
-#   echo -e "${GREEN}Convert ROSBAG to PCD for all instance complete${NC}"
+    INSTANCE=$((INSTANCE+1))
+  done < "$DEVICES"
+  echo -e "${GREEN}Convert ROSBAG to PCD for all instance complete${NC}"
 
-#   # backup the ROSBAG file
-#   mv "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag-$NOW"
-# fi
+  # backup the ROSBAG file
+  mv "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag-$NOW"
+fi
 
-# # 3. loop for calibration
-# echo "start auto calibration...(start = $NOW)" | tee -a "$LOG"
-# INSTANCE=1
-# while IFS= read -r line
-# do
-#   echo "Start processing for base = ${BASE} target = $line (PARALLEL INSTANCE $INSTANCE)" | tee -a "$LOG"
-#   gnome-terminal -x bash -c "bash /home/liu/Desktop/livox-shortcut/auto-calibration/run-parallel.sh -p=$INSTANCE -r="/home/liu/Desktop/out/result-temp-$INSTANCE.txt"; exec bash && exit"
-#   INSTANCE=$((INSTANCE+1))
-# done < "$DEVICES"
+# 3. loop for calibration
+echo "start auto calibration...(start = $NOW)" | tee -a "$LOG"
+INSTANCE=1
+while IFS= read -r line
+do
+  echo "Start processing for base = ${BASE} target = $line (PARALLEL INSTANCE $INSTANCE)" | tee -a "$LOG"
+  gnome-terminal -x bash -c "bash /home/liu/Desktop/livox-shortcut/auto-calibration/run-parallel.sh -p=$INSTANCE -r="/home/liu/Desktop/out/result-temp-$INSTANCE.txt"; exec bash && exit"
+  INSTANCE=$((INSTANCE+1))
+done < "$DEVICES"
 
 echo "Press Enter if all calibration instance disappeared/completed..."
 read key
@@ -197,7 +197,9 @@ echo -e "All calibration complete(finish = $NOW)" | tee -a "$LOG"
 
 # print result
 if test -f "$SECOND_RESULT"; then
+  echo "$SECOND_RESULT"
   cat "$SECOND_RESULT"
 else
+  echo "$THIS_RESULT"
   cat "$THIS_RESULT"
 fi
