@@ -4,23 +4,18 @@
 # if the first result exist, it will use it to create second result
 # if the first result and second result exist, it will mv the second to first and re-create the second
 # the target device info it put into the EXPREIMENT folder
+USE_LVX=false
+USE_ROSBAG=true
+
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+NOW=$(date +"%T")
 
 # set params
 # example: bash '/home/liu/Desktop/livox-shortcut/auto-calibration.sh' -i="test1" -d="20210721" -b=""
 EXPERIMENT="test1"
 DATE="20210805"
 BASE="3JEDHB300100641"
-DEVICES="/home/liu/Desktop/Experiment_$DATE/target-devices.txt"
-LOG="/home/liu/Desktop/Experiment_$DATE/$EXPERIMENT-calib-log.txt"
-THIS_RESULT="/home/liu/Desktop/Experiment_$DATE/$EXPERIMENT-calib-result.xml"
-FIRST_RESULT="/home/liu/Desktop/Experiment_$DATE/first-result.xml"
-SECOND_RESULT="/home/liu/Desktop/Experiment_$DATE/$EXPERIMENT-second-result.xml"
-USE_REMOTE_MACHINE=false
-REMOTE_IP="192.168.17.70"
-NOW=$(date +"%T")
-USE_LVX=false
-BYPASS_ROSBAG=false
-
 for i in "$@"
 do
 case $i in
@@ -36,16 +31,25 @@ case $i in
 esac
 done
 
-# send to remote machine to accelerate
-if $USE_REMOTE_MACHINE && [ $(hostname -I) != $REMOTE_IP ]; then
-  echo "Sending LVX to remote..."
-  tmux new-session -d -s "send-file"
-  gnome-terminal -x bash -c "tmux attach -t "send-file"; exec bash && exit"
-  tmux send-key -t "send-file" 'scp "/home/liu/Desktop/Experiment_'${DATE}/${EXPERIMENT}'.lvx" liu@'$REMOTE_IP':/home/liu/Desktop/Experiment_'${DATE}/${EXPERIMENT}'.lvx' Enter
-fi
+DEVICES="/home/liu/Desktop/Experiment_$DATE/target-devices.txt"
+LOG="/home/liu/Desktop/Experiment_$DATE/$EXPERIMENT.log"
 
-# convert to rosbag
+# second result = first result - this result
+THIS_RESULT="/home/liu/Desktop/Experiment_$DATE/$EXPERIMENT-this-result.xml"
+FIRST_RESULT="/home/liu/Desktop/Experiment_$DATE/first-result.xml"
+SECOND_RESULT="/home/liu/Desktop/Experiment_$DATE/$EXPERIMENT-second-result.xml"
+
+# remote machine
+REMOTE_IP="192.168.17.70"
+
+# 1. convert lvx to rosbag
 if $USE_LVX; then
+  if ! test -f "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.lvx"; then
+    echo -e "${RED}LVX file not exist, record LVX or disbale USE_LVX"
+    echo -e "${NC}Exiting..."
+    exit
+  fi
+
   echo "Converting LVX to ROSBAG..."
   rm "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag"
   tmux new-session -d -s "lvx2bag"
@@ -64,18 +68,9 @@ if $USE_LVX; then
   sleep 2
   xdotool search "~/Videos" windowclose
   echo "LVX convert to ROSBAG file complete"
+
+  # backup the LVX file
   mv "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.lvx" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.lvx-$NOW"
-fi
-
-# show rosbag info
-rosbag info "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" | tee -a "$LOG"
-
-# loop for one calibration
-echo "start auto calibration...(start = $NOW)" | tee -a "$LOG"
-
-# cleanup previous result
-if test -f "$THIS_RESULT"; then
-  rm "$THIS_RESULT"
 fi
 
 # run calibration base on previous result
@@ -93,27 +88,27 @@ if test -f "$FIRST_RESULT"; then
   echo "<Livox>" >> "$SECOND_RESULT"
 fi
 
-# create current calibration result
+# create this differential calibration result
 if test -f "$THIS_RESULT"; then
   rm "$THIS_RESULT"
 fi
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" >> "$THIS_RESULT"
 echo "<Livox>" >> "$THIS_RESULT"
 
+# 2. loop for rosbag to pcd, and calibration
+echo "start auto calibration...(start = $NOW)" | tee -a "$LOG"
 while IFS= read -r line
 do
-  if $BYPASS_ROSBAG; then
-    echo "Bypass rosbag..."
-  fi
+  echo "Start processing for target device ID $line"
 
-  if ! $BYPASS_ROSBAG; then
+  # 2.1 rosbag to pcd (base and target folder)
+  if $USE_ROSBAG; then
+    # show rosbag info
+    rosbag info "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" | tee -a "$LOG"
+
     echo "Rosbag topic separating..."
     bash '/home/liu/Desktop/livox-shortcut/ros-rosbag-to-pcd/ros-bag-to-pcd-for-auto-calibration.sh' -i="/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" -b="${BASE}" -t="$line"
     echo "Rosbag topic separating complete"
-
-    # backup rosbag
-    echo "Rosbag backup..."
-    cp "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag-$NOW"
 
     # rename all files in Base_LiDAR_Frames
     echo "Renaming files..."
@@ -136,10 +131,9 @@ do
     echo "Renaming complete"
   fi
 
-  # real calibration execution
+  # 2.2 calibration execution
   NOW=$(date +"%T")
-  echo "calibration for base = ${BASE} target = $line...(start = $NOW)" | tee -a "$LOG"
-  cd /home/liu/livox/github-livox-sdk/Livox_automatic_calibration/build
+  echo "calibrating for base = ${BASE} target = $line...(start = $NOW)" | tee -a "$LOG"
   bash /home/liu/Desktop/livox-shortcut/auto-calibration/run.sh -r="/home/liu/Desktop/out/temp.txt" -l="$LOG"
 
   # create the result
@@ -150,19 +144,21 @@ do
 
   NOW=$(date +"%T")
   echo "calibration complete for $line(finsh = $NOW)" | tee -a "$LOG"
-
-  # copy mapping result to Experiment folder
-  cp "/home/liu/livox/github-livox-sdk/Livox_automatic_calibration/data/H-LiDAR-Map-data/H_LiDAR_Map.pcd" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}-mapping.pcd"
 done < "$DEVICES"
 
 NOW=$(date +"%T")
 echo "All calibration complete(finish = $NOW)" | tee -a "$LOG"
 
+# complete result
 if test -f "$FIRST_RESULT"; then
   echo "</Livox>" >> "$SECOND_RESULT"
 fi
 echo "</Livox>" >> "$THIS_RESULT"
 
-echo "mission complete!" | espeak
-# show calibration log
-#xdg-open "$LOG"
+# backup the ROSBAG file
+cp "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag-$NOW"
+
+# copy mapping result to Experiment folder
+cp "/home/liu/livox/github-livox-sdk/Livox_automatic_calibration/data/H-LiDAR-Map-data/H_LiDAR_Map.pcd" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}-mapping.pcd"
+
+echo "calibration complete!" | espeak

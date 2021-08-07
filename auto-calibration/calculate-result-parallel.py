@@ -4,9 +4,10 @@ import sys
 
 # sys.argv[1] is the target device ID
 # sys.argv[2] is first-result.xml path
+# sys.argv[2] is parallel instance ID (1~)
 
 # Current result
-path = '/home/liu/Desktop/out/temp.txt'
+path = '/home/liu/Desktop/out/temp-' + str(sys.argv[3]) +'.txt'
 result_temp_file = open(path, 'r')
 lines = result_temp_file.readlines()
 

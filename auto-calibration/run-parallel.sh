@@ -1,0 +1,18 @@
+#!/bin/bash 
+
+for i in "$@"
+do
+case $i in
+  -r=*|--result=*)
+  RESULT="${i#*=}"
+  ;;
+  -p=*|--parallelinstance=*)
+  INSTANCE="${i#*=}"
+  ;;
+esac
+done
+
+cd /home/liu/livox/github-livox-sdk/Livox_automatic_calibration-parallel/${INSTANCE}/build
+/home/liu/livox/github-livox-sdk/Livox_automatic_calibration-parallel/${INSTANCE}/build/./mapping
+/home/liu/livox/github-livox-sdk/Livox_automatic_calibration-parallel/${INSTANCE}/build/./calibration
+/home/liu/livox/github-livox-sdk/Livox_automatic_calibration-parallel/${INSTANCE}/build/./fitline | tee "$RESULT"
