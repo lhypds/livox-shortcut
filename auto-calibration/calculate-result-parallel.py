@@ -7,7 +7,7 @@ import sys
 # sys.argv[2] is parallel instance ID (1~)
 
 # Current result
-path = '/home/liu/Desktop/out/temp-' + str(sys.argv[3]) +'.txt'
+path = '/home/liu/Desktop/out/result-temp-' + str(sys.argv[3]) +'.txt'
 result_temp_file = open(path, 'r')
 lines = result_temp_file.readlines()
 

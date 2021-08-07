@@ -147,7 +147,7 @@ do
   # 2.2 calibration execution
   NOW=$(date +"%T")
   echo "calibrating for base = ${BASE} target = $line...(start = $NOW)" | tee -a "$LOG"
-  bash /home/liu/Desktop/livox-shortcut/auto-calibration/run.sh -r="/home/liu/Desktop/out/temp.txt" -l="$LOG"
+  bash /home/liu/Desktop/livox-shortcut/auto-calibration/run.sh -r="/home/liu/Desktop/out/result-temp.txt" -l="$LOG"
 
   # result content
   if test -f "$FIRST_RESULT"; then

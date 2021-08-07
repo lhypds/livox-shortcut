@@ -134,7 +134,7 @@ INSTANCE=1
 while IFS= read -r line
 do
   echo "Start processing for base = ${BASE} target = $line (PARALLEL INSTANCE $INSTANCE)" | tee -a "$LOG"
-  gnome-terminal -x bash -c "bash /home/liu/Desktop/livox-shortcut/auto-calibration/run-parallel.sh -p=$INSTANCE -r="/home/liu/Desktop/out/temp-$INSTANCE.txt"; exec bash && exit"
+  gnome-terminal -x bash -c "bash /home/liu/Desktop/livox-shortcut/auto-calibration/run-parallel.sh -p=$INSTANCE -r="/home/liu/Desktop/out/result-temp-$INSTANCE.txt"; exec bash && exit"
   INSTANCE=$((INSTANCE+1))
 done < "$DEVICES"
 

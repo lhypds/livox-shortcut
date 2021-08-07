@@ -6,7 +6,7 @@ import sys
 # sys.argv[2] is first-result.xml path
 
 # Current result
-path = '/home/liu/Desktop/out/temp.txt'
+path = '/home/liu/Desktop/out/result-temp.txt'
 result_temp_file = open(path, 'r')
 lines = result_temp_file.readlines()
 
