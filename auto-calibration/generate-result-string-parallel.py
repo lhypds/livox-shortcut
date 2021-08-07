@@ -2,7 +2,7 @@
 import math
 import sys
 
-path = '/home/liu/Desktop/out/result-temp' + str(sys.argv[2]) + '.txt'
+path = '/home/liu/Desktop/out/result-temp-' + str(sys.argv[2]) + '.txt'
 result_temp_file = open(path, 'r')
 lines = result_temp_file.readlines()
 
