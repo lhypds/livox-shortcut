@@ -45,6 +45,9 @@ SECOND_RESULT="/home/liu/Desktop/Experiment_$DATE/$EXPERIMENT-second-result.xml"
 # remote machine
 REMOTE_IP="192.168.17.70"
 
+# cleanup
+rm -rf /home/liu/Desktop/out/*
+
 # 1. convert lvx to rosbag
 if $USE_LVX; then
   if ! test -f "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.lvx"; then
@@ -77,27 +80,25 @@ if $USE_LVX; then
   mv "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.lvx" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.lvx-$NOW"
 fi
 
-# prepare the result file
-if test -f "$FIRST_RESULT"; then
-  # replace the first result with the previous second result
-  if test -f "$SECOND_RESULT"; then
-    mv "$FIRST_RESULT" "$FIRST_RESULT-$NOW"
-
-    # re-create second result
-    cp "$SECOND_RESULT" "$SECOND_RESULT-$NOW"
-    mv "$SECOND_RESULT" "$FIRST_RESULT"
-  fi
-
-  echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" >> "$SECOND_RESULT"
-  echo "<Livox>" >> "$SECOND_RESULT"
-fi
-
-# create this differential calibration result
+# prepare the result files
 if test -f "$THIS_RESULT"; then
-  rm "$THIS_RESULT"
+  mv "$THIS_RESULT" "$THIS_RESULT-$NOW"
 fi
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" >> "$THIS_RESULT"
 echo "<Livox>" >> "$THIS_RESULT"
+
+# replace the first result with the previous second result
+if test -f "$FIRST_RESULT" && test -f "$SECOND_RESULT"; then
+    mv "$FIRST_RESULT" "$FIRST_RESULT-$NOW"
+    cp "$SECOND_RESULT" "$SECOND_RESULT-$NOW"
+    mv "$SECOND_RESULT" "$FIRST_RESULT"
+  fi
+fi
+
+if test -f "$FIRST_RESULT"; then
+  echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" >> "$SECOND_RESULT"
+  echo "<Livox>" >> "$SECOND_RESULT"
+fi
 
 # 2. loop for rosbag to pcd, and calibration
 echo "start auto calibration...(start = $NOW)" | tee -a "$LOG"

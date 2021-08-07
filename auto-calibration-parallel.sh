@@ -45,6 +45,9 @@ SECOND_RESULT="/home/liu/Desktop/Experiment_$DATE/$EXPERIMENT-second-result.xml"
 # remote machine
 REMOTE_IP="192.168.17.70"
 
+# cleanup
+rm -rf /home/liu/Desktop/out/*
+
 # 1. convert lvx to rosbag
 if $USE_LVX; then
   if ! test -f "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.lvx"; then
@@ -84,62 +87,18 @@ if $USE_ROSBAG; then
     exit
   fi
 
+  # show rosbag info
+  rosbag info "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" | tee -a "$LOG"
+
+  echo "Start converting ROSBAG to PCD"
+  INSTANCE=1
   while IFS= read -r line
   do
-    echo "Start processing for target device ID $line"
-
-    # show rosbag info
-    rosbag info "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" | tee -a "$LOG"
-
-    echo "Rosbag topic separating..."
-    bash '/home/liu/Desktop/livox-shortcut/ros-rosbag-to-pcd/ros-bag-to-pcd-for-auto-calibration.sh' -i="/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" -b="${BASE}" -t="$line"
-    echo "Rosbag topic separating complete"
-
-    # rename all files in Base_LiDAR_Frames
-    echo "Renaming files..."
-    cd /home/liu/livox/github-livox-sdk/Livox_automatic_calibration/data/Base_LiDAR_Frames
-    i=100000
-    for file in $(find * -name '*.pcd' | sort)
-    do
-      mv $file "$i.pcd"
-      i=$((i+1))
-    done
-
-    # rename all files in Target-LiDAR-Frames
-    cd /home/liu/livox/github-livox-sdk/Livox_automatic_calibration/data/Target-LiDAR-Frames
-    i=100000
-    for file in $(find * -name '*.pcd' | sort)
-    do
-      mv $file "$i.pcd"
-      i=$((i+1))
-    done
-    echo "Renaming complete"
-  done < "$DEVICES"
-
-  # backup the ROSBAG file
-  cp "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag-$NOW"
-fi
-
-# loop for one calibration
-echo "start auto calibration...(start = $NOW)" | tee -a "$LOG"
-INSTANCE=1
-while IFS= read -r line
-do
-  echo "Start processing for target device ID $line (PARALLEL INSTANCE $INSTANCE)"
-  if ! $USE_ROSBAG; then
-    echo "Bypass rosbag..."
-  fi
-
-  if $USE_ROSBAG; then
-    # show rosbag info
-    rosbag info "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" | tee -a "$LOG"
+    echo -e "${BLUE}Convert ROSBAG to PCD for device $line (Instance $INSTANCE)${NC}"
 
     echo "Rosbag topic separating..."
     bash '/home/liu/Desktop/livox-shortcut/ros-rosbag-to-pcd/ros-bag-to-pcd-for-auto-calibration-parallel.sh' -i="/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" -b="${BASE}" -t="$line" -p="$INSTANCE"
     echo "Rosbag topic separating complete"
-
-    # backup the ROSBAG file
-    cp "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag-$NOW"
 
     # rename all files in Base_LiDAR_Frames
     echo "Renaming files..."
@@ -160,60 +119,75 @@ do
       i=$((i+1))
     done
     echo "Renaming complete"
-  fi
 
-  # real calibration execution
-  echo "calibrating for base = ${BASE} target = $line..." | tee -a "$LOG"
+    INSTANCE=$((INSTANCE+1))
+  done < "$DEVICES"
+  echo -e "${GREEN}Convert ROSBAG to PCD for all instance complete${NC}"
+
+  # backup the ROSBAG file
+  mv "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag-$NOW"
+fi
+
+# 3. loop for calibration
+echo "start auto calibration...(start = $NOW)" | tee -a "$LOG"
+INSTANCE=1
+while IFS= read -r line
+do
+  echo "Start processing for base = ${BASE} target = $line (PARALLEL INSTANCE $INSTANCE)" | tee -a "$LOG"
   gnome-terminal -x bash -c "bash /home/liu/Desktop/livox-shortcut/auto-calibration/run-parallel.sh -p=$INSTANCE -r="/home/liu/Desktop/out/temp-$INSTANCE.txt"; exec bash && exit"
-
   INSTANCE=$((INSTANCE+1))
 done < "$DEVICES"
 
-NOW=$(date +"%T")
 echo "Press Enter if all calibration instance disappeared/completed..."
 read key
 while [ "$key" != "" ]
 do
   read key
 done
-echo "${GREEN}All calibration complete(finish = $NOW)${NC}" | tee -a "$LOG"
 
-# copy mapping result to Experiment folder
-cp "/home/liu/livox/github-livox-sdk/Livox_automatic_calibration/1/data/H-LiDAR-Map-data/H_LiDAR_Map.pcd" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}-mapping.pcd"
+# 4. collecting result
+echo -e "${BLUE}Collecting result...${NC}"
 
-# collecting result
+# 4.1 header
 if test -f "$THIS_RESULT"; then
-  rm "$THIS_RESULT"
+  mv "$THIS_RESULT" "$THIS_RESULT-$NOW"
 fi
+echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" >> "$THIS_RESULT"
+echo "<Livox>" >> "$THIS_RESULT"
 
-# run calibration base on previous result
-if test -f "$FIRST_RESULT"; then
-  # replace the first result with the previous second result
-  if test -f "$SECOND_RESULT"; then
+# replace the first result with the previous second result
+if test -f "$FIRST_RESULT" && test -f "$SECOND_RESULT"; then
     mv "$FIRST_RESULT" "$FIRST_RESULT-$NOW"
-
-    # re-create second result
     cp "$SECOND_RESULT" "$SECOND_RESULT-$NOW"
     mv "$SECOND_RESULT" "$FIRST_RESULT"
   fi
 fi
 
-echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" >> "$SECOND_RESULT"
-echo "<Livox>" >> "$SECOND_RESULT"
-echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" >> "$THIS_RESULT"
-echo "<Livox>" >> "$THIS_RESULT"
+if test -f "$FIRST_RESULT"; then
+  echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" >> "$SECOND_RESULT"
+  echo "<Livox>" >> "$SECOND_RESULT"
+fi
 
+# 4.1 content
 INSTANCE=1
 while IFS= read -r line
 do
   if test -f "$FIRST_RESULT"; then
     python3 '/home/liu/Desktop/livox-shortcut/auto-calibration/calculate-result-parallel.py' $line $FIRST_RESULT $INSTANCE >> "$SECOND_RESULT"
   fi
+
   python3 '/home/liu/Desktop/livox-shortcut/auto-calibration/generate-result-string-parallel.py' $line $INSTANCE >> "$THIS_RESULT"
+
   INSTANCE=$((INSTANCE+1))
 done < "$DEVICES"
 
+# 4.3 footer
 if test -f "$FIRST_RESULT"; then
   echo "</Livox>" >> "$SECOND_RESULT"
 fi
 echo "</Livox>" >> "$THIS_RESULT"
+
+# copy mapping result to Experiment folder
+cp "/home/liu/livox/github-livox-sdk/Livox_automatic_calibration/1/data/H-LiDAR-Map-data/H_LiDAR_Map.pcd" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}-mapping.pcd"
+
+echo -e "${GREEN}All calibration complete(finish = $NOW)${NC}" | tee -a "$LOG"
