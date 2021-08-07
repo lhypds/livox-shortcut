@@ -148,6 +148,17 @@ done
 # 4. collecting result
 echo -e "${BLUE}Collecting result...${NC}"
 
+# replace the first result with the previous second result
+if test -f "$FIRST_RESULT"; then
+  if test -f "$SECOND_RESULT"; then
+    mv "$FIRST_RESULT" "$FIRST_RESULT-$NOW"
+    cp "$SECOND_RESULT" "$SECOND_RESULT-$NOW"
+    mv "$SECOND_RESULT" "$FIRST_RESULT"
+  fi
+else if test -f "$SECOND_RESULT"; then
+  mv "$SECOND_RESULT" "$SECOND_RESULT-$NOW"
+fi
+
 # 4.1 header
 if test -f "$THIS_RESULT"; then
   mv "$THIS_RESULT" "$THIS_RESULT-$NOW"
@@ -155,20 +166,12 @@ fi
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" >> "$THIS_RESULT"
 echo "<Livox>" >> "$THIS_RESULT"
 
-# replace the first result with the previous second result
-if test -f "$FIRST_RESULT" && test -f "$SECOND_RESULT"; then
-    mv "$FIRST_RESULT" "$FIRST_RESULT-$NOW"
-    cp "$SECOND_RESULT" "$SECOND_RESULT-$NOW"
-    mv "$SECOND_RESULT" "$FIRST_RESULT"
-  fi
-fi
-
 if test -f "$FIRST_RESULT"; then
   echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" >> "$SECOND_RESULT"
   echo "<Livox>" >> "$SECOND_RESULT"
 fi
 
-# 4.1 content
+# 4.2 content
 INSTANCE=1
 while IFS= read -r line
 do
@@ -190,4 +193,11 @@ echo "</Livox>" >> "$THIS_RESULT"
 # copy mapping result to Experiment folder
 cp "/home/liu/livox/github-livox-sdk/Livox_automatic_calibration/1/data/H-LiDAR-Map-data/H_LiDAR_Map.pcd" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}-mapping.pcd"
 
-echo -e "${GREEN}All calibration complete(finish = $NOW)${NC}" | tee -a "$LOG"
+echo -e "All calibration complete(finish = $NOW)" | tee -a "$LOG"
+
+# print result
+if test -f "$SECOND_RESULT"; then
+  cat "$SECOND_RESULT"
+else
+  cat "$THIS_RESULT"
+fi

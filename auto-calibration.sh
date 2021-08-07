@@ -80,20 +80,23 @@ if $USE_LVX; then
   mv "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.lvx" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.lvx-$NOW"
 fi
 
-# prepare the result files
+# replace the first result with the previous second result
+if test -f "$FIRST_RESULT"; then
+  if test -f "$SECOND_RESULT"; then
+    mv "$FIRST_RESULT" "$FIRST_RESULT-$NOW"
+    cp "$SECOND_RESULT" "$SECOND_RESULT-$NOW"
+    mv "$SECOND_RESULT" "$FIRST_RESULT"
+  fi
+else if test -f "$SECOND_RESULT"; then
+  mv "$SECOND_RESULT" "$SECOND_RESULT-$NOW"
+fi
+
+# result header
 if test -f "$THIS_RESULT"; then
   mv "$THIS_RESULT" "$THIS_RESULT-$NOW"
 fi
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" >> "$THIS_RESULT"
 echo "<Livox>" >> "$THIS_RESULT"
-
-# replace the first result with the previous second result
-if test -f "$FIRST_RESULT" && test -f "$SECOND_RESULT"; then
-    mv "$FIRST_RESULT" "$FIRST_RESULT-$NOW"
-    cp "$SECOND_RESULT" "$SECOND_RESULT-$NOW"
-    mv "$SECOND_RESULT" "$FIRST_RESULT"
-  fi
-fi
 
 if test -f "$FIRST_RESULT"; then
   echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" >> "$SECOND_RESULT"
@@ -146,7 +149,7 @@ do
   echo "calibrating for base = ${BASE} target = $line...(start = $NOW)" | tee -a "$LOG"
   bash /home/liu/Desktop/livox-shortcut/auto-calibration/run.sh -r="/home/liu/Desktop/out/temp.txt" -l="$LOG"
 
-  # create the result
+  # result content
   if test -f "$FIRST_RESULT"; then
     python3 '/home/liu/Desktop/livox-shortcut/auto-calibration/calculate-result.py' $line $FIRST_RESULT >> "$SECOND_RESULT"
   fi
@@ -156,10 +159,7 @@ do
   echo -e "${GREEN}calibration complete for $line(finsh = $NOW)${NC}" | tee -a "$LOG"
 done < "$DEVICES"
 
-NOW=$(date +"%T")
-echo -e "${GREEN}All calibration complete(finish = $NOW)${NC}" | tee -a "$LOG"
-
-# complete result
+# result footer
 if test -f "$FIRST_RESULT"; then
   echo "</Livox>" >> "$SECOND_RESULT"
 fi
@@ -171,4 +171,13 @@ cp "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" "/home/liu/Desktop/E
 # copy mapping result to Experiment folder
 cp "/home/liu/livox/github-livox-sdk/Livox_automatic_calibration/data/H-LiDAR-Map-data/H_LiDAR_Map.pcd" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}-mapping.pcd"
 
-echo -e "${GREEN}calibration complete!${NC}" | espeak
+NOW=$(date +"%T")
+echo -e "All calibration complete(finish = $NOW)" | tee -a "$LOG"
+espeak "Calibration complete"
+
+# print result
+if test -f "$SECOND_RESULT"; then
+  cat "$SECOND_RESULT"
+else
+  cat "$THIS_RESULT"
+fi
