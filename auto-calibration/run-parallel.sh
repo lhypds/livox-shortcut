@@ -20,3 +20,4 @@ cd /home/liu/livox/github-livox-sdk/Livox_automatic_calibration_parallel/${INSTA
 echo "Instance $INSTANCE compelte, press Enter to exit"
 read key
 exit
+exit

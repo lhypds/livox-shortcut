@@ -17,7 +17,7 @@ NOW=$(date +"%T")
 # set params
 # example: bash '/home/liu/Desktop/livox-shortcut/auto-calibration.sh' -i="test1" -d="20210721" -b=""
 EXPERIMENT="test1"
-DATE="20210805"
+DATE="20210812"
 BASE="3JEDHB300100641"
 for i in "$@"
 do
