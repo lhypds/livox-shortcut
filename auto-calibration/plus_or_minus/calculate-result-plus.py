@@ -8,7 +8,7 @@ target = "3JEDHB300100891"
 first_result_path = "/home/liu/Desktop/Experiment_20210804/first-result.xml"
 
 # Current result
-path = '/home/liu/Desktop/out/result-temp.txt'
+path = '/home/liu/livox/out/result-temp.txt'
 result_temp_file = open(path, 'r')
 lines = result_temp_file.readlines()
 

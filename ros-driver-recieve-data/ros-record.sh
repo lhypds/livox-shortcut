@@ -1,4 +1,4 @@
-rm /home/liu/Desktop/out/*
+rm /home/liu/livox/out/*
 cd /home/liu/Desktop/out
 tmux new-session -d -s "roscore" roscore
 sleep 2

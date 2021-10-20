@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 NOW=$(date +"%T")
 
 # set params
-# example: bash '/home/liu/Desktop/livox-shortcut/auto-calibration.sh' -i="test1" -d="20210721" -b=""
+# example: bash '/home/liu/livox/livox-shortcut/auto-calibration.sh' -i="test1" -d="20210721" -b=""
 EXPERIMENT="test1"
 DATE="20210805"
 BASE="3JEDHB300100641"
@@ -46,7 +46,7 @@ SECOND_RESULT="/home/liu/Desktop/Experiment_$DATE/$EXPERIMENT-second-result.xml"
 REMOTE_IP="192.168.17.70"
 
 # cleanup
-rm -rf /home/liu/Desktop/out/*
+rm -rf /home/liu/livox/out/*
 
 # 1. convert lvx to rosbag
 if $USE_LVX; then
@@ -66,7 +66,7 @@ if $USE_LVX; then
   gnome-terminal -x bash -c "cd ~/Videos && tmux attach -t "lvx2bag"; exec bash && exit"
 
   # execute LVX to rosbag
-  tmux send-key -t "lvx2bag" 'bash '/home/liu/Desktop/livox-shortcut/ros-driver-lvx-to-rosbag/livox-ros-driver-launch-lvx-to-rosbag-multi-topic.sh' -i="/home/liu/Desktop/Experiment_'${DATE}/${EXPERIMENT}'.lvx"' Enter
+  tmux send-key -t "lvx2bag" 'bash '/home/liu/livox/livox-shortcut/ros-driver-lvx-to-rosbag/livox-ros-driver-launch-lvx-to-rosbag-multi-topic.sh' -i="/home/liu/Desktop/Experiment_'${DATE}/${EXPERIMENT}'.lvx"' Enter
   sleep 10
 
   # kill the show execute
@@ -120,7 +120,7 @@ do
     rosbag info "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" | tee -a "$LOG"
 
     echo "Rosbag topic separating..."
-    bash '/home/liu/Desktop/livox-shortcut/ros-rosbag-to-pcd/ros-bag-to-pcd-for-auto-calibration.sh' -i="/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" -b="${BASE}" -t="$line"
+    bash '/home/liu/livox/livox-shortcut/ros-rosbag-to-pcd/ros-bag-to-pcd-for-auto-calibration.sh' -i="/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" -b="${BASE}" -t="$line"
     echo -e "${GREEN}Rosbag topic separating complete${NC}"
 
     # rename all files in Base_LiDAR_Frames
@@ -147,13 +147,13 @@ do
   # 2.2 calibration execution
   NOW=$(date +"%T")
   echo "calibrating for base = ${BASE} target = $line...(start = $NOW)" | tee -a "$LOG"
-  bash /home/liu/Desktop/livox-shortcut/auto-calibration/run.sh -r="/home/liu/Desktop/out/result-temp.txt" -l="$LOG"
+  bash /home/liu/livox/livox-shortcut/auto-calibration/run.sh -r="/home/liu/livox/out/result-temp.txt" -l="$LOG"
 
   # result content
   if test -f "$FIRST_RESULT"; then
-    python3 '/home/liu/Desktop/livox-shortcut/auto-calibration/calculate-result.py' $line $FIRST_RESULT >> "$SECOND_RESULT"
+    python3 '/home/liu/livox/livox-shortcut/auto-calibration/calculate-result.py' $line $FIRST_RESULT >> "$SECOND_RESULT"
   fi
-  python3 '/home/liu/Desktop/livox-shortcut/auto-calibration/generate-result-string.py' $line >> "$THIS_RESULT"
+  python3 '/home/liu/livox/livox-shortcut/auto-calibration/generate-result-string.py' $line >> "$THIS_RESULT"
 
   NOW=$(date +"%T")
   echo -e "${GREEN}calibration complete for $line(finsh = $NOW)${NC}" | tee -a "$LOG"

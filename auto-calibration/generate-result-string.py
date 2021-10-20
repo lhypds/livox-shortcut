@@ -2,7 +2,7 @@
 import math
 import sys
 
-path = '/home/liu/Desktop/out/result-temp.txt'
+path = '/home/liu/livox/out/result-temp.txt'
 result_temp_file = open(path, 'r')
 lines = result_temp_file.readlines()
 

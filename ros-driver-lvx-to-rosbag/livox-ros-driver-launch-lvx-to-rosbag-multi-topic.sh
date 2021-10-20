@@ -1,5 +1,5 @@
 # Params 1. input lvx file path
-# Example: bash '/home/liu/Desktop/livox-shortcut/ros-driver-lvx-to-rosbag/livox-ros-driver-launch-lvx-to-rosbag-multi-topic.sh' -i="/home/liu/Desktop/Experiment_20210721/test1.lvx"
+# Example: bash '/home/liu/livox/livox-shortcut/ros-driver-lvx-to-rosbag/livox-ros-driver-launch-lvx-to-rosbag-multi-topic.sh' -i="/home/liu/Desktop/Experiment_20210721/test1.lvx"
 for i in "$@"
 do
 case $i in

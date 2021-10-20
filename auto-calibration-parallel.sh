@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 NOW=$(date +"%T")
 
 # set params
-# example: bash '/home/liu/Desktop/livox-shortcut/auto-calibration.sh' -i="test1" -d="20210721" -b=""
+# example: bash '~/livox/livox-shortcut/auto-calibration.sh' -i="test1" -d="20210721" -b=""
 EXPERIMENT="test1"
 DATE="20210812"
 BASE="3JEDHB300100641"
@@ -46,7 +46,7 @@ SECOND_RESULT="/home/liu/Desktop/Experiment_$DATE/$EXPERIMENT-second-result.xml"
 REMOTE_IP="192.168.17.70"
 
 # cleanup
-rm -rf /home/liu/Desktop/out/*
+rm -rf /home/liu/livox/out/*
 
 # 1. convert lvx to rosbag
 if $USE_LVX; then
@@ -66,7 +66,7 @@ if $USE_LVX; then
   gnome-terminal -x bash -c "cd ~/Videos && tmux attach -t "lvx2bag"; exec bash && exit"
 
   # execute LVX to rosbag
-  tmux send-key -t "lvx2bag" 'bash '/home/liu/Desktop/livox-shortcut/ros-driver-lvx-to-rosbag/livox-ros-driver-launch-lvx-to-rosbag-multi-topic.sh' -i="/home/liu/Desktop/Experiment_'${DATE}/${EXPERIMENT}'.lvx"' Enter
+  tmux send-key -t "lvx2bag" 'bash '/home/liu/livox/livox-shortcut/ros-driver-lvx-to-rosbag/livox-ros-driver-launch-lvx-to-rosbag-multi-topic.sh' -i="/home/liu/Desktop/Experiment_'${DATE}/${EXPERIMENT}'.lvx"' Enter
   sleep 10
 
   # kill the show execute
@@ -97,7 +97,7 @@ if $USE_ROSBAG; then
     echo -e "${BLUE}Convert ROSBAG to PCD for device $line (Instance $INSTANCE)${NC}"
 
     echo "Rosbag topic separating..."
-    bash '/home/liu/Desktop/livox-shortcut/ros-rosbag-to-pcd/ros-bag-to-pcd-for-auto-calibration-parallel.sh' -i="/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" -b="${BASE}" -t="$line" -p="$INSTANCE"
+    bash '/home/liu/livox/livox-shortcut/ros-rosbag-to-pcd/ros-bag-to-pcd-for-auto-calibration-parallel.sh' -i="/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" -b="${BASE}" -t="$line" -p="$INSTANCE"
     echo "Rosbag topic separating complete"
 
     # rename all files in Base_LiDAR_Frames
@@ -134,7 +134,7 @@ INSTANCE=1
 while IFS= read -r line
 do
   echo "Start processing for base = ${BASE} target = $line (PARALLEL INSTANCE $INSTANCE)" | tee -a "$LOG"
-  gnome-terminal -x bash -c "bash /home/liu/Desktop/livox-shortcut/auto-calibration/run-parallel.sh -p=$INSTANCE -r="/home/liu/Desktop/out/result-temp-$INSTANCE.txt"; exec bash && exit"
+  gnome-terminal -x bash -c "bash /home/liu/livox/livox-shortcut/auto-calibration/run-parallel.sh -p=$INSTANCE -r="/home/liu/livox/out/result-temp-$INSTANCE.txt"; exec bash && exit"
   INSTANCE=$((INSTANCE+1))
 done < "$DEVICES"
 
@@ -176,10 +176,10 @@ INSTANCE=1
 while IFS= read -r line
 do
   if test -f "$FIRST_RESULT"; then
-    python3 '/home/liu/Desktop/livox-shortcut/auto-calibration/calculate-result-parallel.py' $line $FIRST_RESULT $INSTANCE >> "$SECOND_RESULT"
+    python3 '/home/liu/livox/livox-shortcut/auto-calibration/calculate-result-parallel.py' $line $FIRST_RESULT $INSTANCE >> "$SECOND_RESULT"
   fi
 
-  python3 '/home/liu/Desktop/livox-shortcut/auto-calibration/generate-result-string-parallel.py' $line $INSTANCE >> "$THIS_RESULT"
+  python3 '/home/liu/livox/livox-shortcut/auto-calibration/generate-result-string-parallel.py' $line $INSTANCE >> "$THIS_RESULT"
 
   INSTANCE=$((INSTANCE+1))
 done < "$DEVICES"

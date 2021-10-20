@@ -99,4 +99,4 @@ cd /home/liu/livox/github-join-pcd/join_pcd/build/
 /home/liu/Desktop/Experiment_20210601/pcd-files/3884.699780190.pcd \
 /home/liu/Desktop/Experiment_20210601/pcd-files/3884.799617170.pcd \
 /home/liu/Desktop/Experiment_20210601/pcd-files/3884.899458430.pcd \
- -o /home/liu/Desktop/out.pcd
+ -o /home/liu/livox/out/out.pcd

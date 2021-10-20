@@ -11,13 +11,16 @@ File Tree
 ~/livox  
     /Livox\ Viewer              Livox Viewer  
     /[Other Github SDK Repos]  
+    /out                        Output files
 ~/Desktop  
     /Experiment_xxx  
-    /out                        Output Files  
 ```
 
 * File Move  
-```livox\github-livox-sdk\* -> livox\*```
+```
+~\livox\github-livox-sdk\* -> livox\*
+~\Desktop\out -> ~\livox\out
+```
 
 
 LiDAR Device List
