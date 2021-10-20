@@ -6,6 +6,7 @@ Livox Shortcut
 File Tree
 ---------
 
+```
 ~/code                          All code backups  
 ~/livox  
     /Livox\ Viewer              Livox Viewer  
@@ -13,22 +14,21 @@ File Tree
 ~/Desktop  
     /Experiment_xxx  
     /out                        Output Files  
+```
 
 * File Move  
-livox\github-livox-sdk\* -> livox\*  
+```livox\github-livox-sdk\* -> livox\*```
 
 
 LiDAR Device List
 -----------------
 
-```
-3JEDHC900100491  Base     Center
-3JEDJ5Q00100431  Target1  Back
-3JEDJ6400100191  Target2  Right
-3JEDJ6400100241  Target3  Back Right
-3JEDJ6400100291  Target4  Back Left
-3JEDJ6400100591  Target5  Left
-```
+3JEDHC900100491  Base     Center  
+3JEDJ5Q00100431  Target1  Back  
+3JEDJ6400100191  Target2  Right  
+3JEDJ6400100241  Target3  Back Right  
+3JEDJ6400100291  Target4  Back Left  
+3JEDJ6400100591  Target5  Left  
 
 
 Record ROS Bag
