@@ -14,6 +14,8 @@ File Tree
     /out                        Output files
 ~/Desktop  
     /Experiment_xxx  
+~/catkin_ws                     Livox Mapping
+~/ws_livox                      Livox ROS Driver
 ```
 
 * File Move  
