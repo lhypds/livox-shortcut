@@ -10,6 +10,8 @@ File Tree
 ~/code                          All code backups  
 ~/livox  
     /Livox\ Viewer              Livox Viewer  
+    /livox-shortcut
+    /Livox-SDK
     /[Other Github SDK Repos]  
     /out                        Output files
 ~/Desktop  
