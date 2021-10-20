@@ -3,6 +3,21 @@ Livox Shortcut
 ==============
 
 
+File Tree
+---------
+
+~/code                          All code backups  
+~/livox  
+    /Livox\ Viewer              Livox Viewer  
+    /[Other Github SDK Repos]  
+~/Desktop  
+    /Experiment_xxx  
+    /out                        Output Files  
+
+* File Move  
+livox\github-livox-sdk\* -> livox\*  
+
+
 LiDAR Device List
 -----------------
 
@@ -36,6 +51,3 @@ Auto Calibration
 1. Record ros bag (refer "Record ROS Bag")
 3. ros-rosbag-to-pcd (use auto calibraton)
 4. auto-calibration.sh
-
-
-

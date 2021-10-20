@@ -102,7 +102,7 @@ if $USE_ROSBAG; then
 
     # rename all files in Base_LiDAR_Frames
     echo "Renaming files..."
-    cd /home/liu/livox/github-livox-sdk/Livox_automatic_calibration_parallel/$INSTANCE/data/Base_LiDAR_Frames
+    cd /home/liu/livox/Livox_automatic_calibration_parallel/$INSTANCE/data/Base_LiDAR_Frames
     i=100000
     for file in $(find * -name '*.pcd' | sort)
     do
@@ -111,7 +111,7 @@ if $USE_ROSBAG; then
     done
 
     # rename all files in Target-LiDAR-Frames
-    cd /home/liu/livox/github-livox-sdk/Livox_automatic_calibration_parallel/$INSTANCE/data/Target-LiDAR-Frames
+    cd /home/liu/livox/Livox_automatic_calibration_parallel/$INSTANCE/data/Target-LiDAR-Frames
     i=100000
     for file in $(find * -name '*.pcd' | sort)
     do
@@ -191,7 +191,7 @@ fi
 echo "</Livox>" >> "$THIS_RESULT"
 
 # copy mapping result to Experiment folder
-cp "/home/liu/livox/github-livox-sdk/Livox_automatic_calibration/1/data/H-LiDAR-Map-data/H_LiDAR_Map.pcd" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}-mapping.pcd"
+cp "/home/liu/livox/Livox_automatic_calibration/1/data/H-LiDAR-Map-data/H_LiDAR_Map.pcd" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}-mapping.pcd"
 
 echo -e "All calibration complete(finish = $NOW)" | tee -a "$LOG"
 

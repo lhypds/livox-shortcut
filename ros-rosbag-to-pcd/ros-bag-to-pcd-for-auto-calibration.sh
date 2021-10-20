@@ -25,14 +25,14 @@ echo Target Device = ${TARGET}
 sleep 2
 
 # Cleanup
-rm /home/liu/livox/github-livox-sdk/Livox_automatic_calibration/data/Base_LiDAR_Frames/*.pcd
-rm /home/liu/livox/github-livox-sdk/Livox_automatic_calibration/data/Target-LiDAR-Frames/*.pcd
+rm /home/liu/livox/Livox_automatic_calibration/data/Base_LiDAR_Frames/*.pcd
+rm /home/liu/livox/Livox_automatic_calibration/data/Target-LiDAR-Frames/*.pcd
 rm /home/liu/Desktop/out/*
 
 # Convert file
 rosbag filter ${ROSBAG} '/home/liu/Desktop/out/topic_base.bag' "topic == '/livox/lidar_${BASE}'"
 rosbag filter ${ROSBAG} '/home/liu/Desktop/out/topic_target.bag' "topic == '/livox/lidar_${TARGET}'"
-rosrun pcl_ros bag_to_pcd /home/liu/Desktop/out/topic_base.bag /livox/lidar_${BASE} /home/liu/livox/github-livox-sdk/Livox_automatic_calibration/data/Base_LiDAR_Frames
-rosrun pcl_ros bag_to_pcd /home/liu/Desktop/out/topic_target.bag /livox/lidar_${TARGET} /home/liu/livox/github-livox-sdk/Livox_automatic_calibration/data/Target-LiDAR-Frames
+rosrun pcl_ros bag_to_pcd /home/liu/Desktop/out/topic_base.bag /livox/lidar_${BASE} /home/liu/livox/Livox_automatic_calibration/data/Base_LiDAR_Frames
+rosrun pcl_ros bag_to_pcd /home/liu/Desktop/out/topic_target.bag /livox/lidar_${TARGET} /home/liu/livox/Livox_automatic_calibration/data/Target-LiDAR-Frames
 tmux kill-server
 

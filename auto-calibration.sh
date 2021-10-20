@@ -125,7 +125,7 @@ do
 
     # rename all files in Base_LiDAR_Frames
     echo "Renaming files..."
-    cd /home/liu/livox/github-livox-sdk/Livox_automatic_calibration/data/Base_LiDAR_Frames
+    cd /home/liu/livox/Livox_automatic_calibration/data/Base_LiDAR_Frames
     i=100000
     for file in $(find * -name '*.pcd' | sort)
     do
@@ -134,7 +134,7 @@ do
     done
 
     # rename all files in Target-LiDAR-Frames
-    cd /home/liu/livox/github-livox-sdk/Livox_automatic_calibration/data/Target-LiDAR-Frames
+    cd /home/liu/livox/Livox_automatic_calibration/data/Target-LiDAR-Frames
     i=100000
     for file in $(find * -name '*.pcd' | sort)
     do
@@ -169,7 +169,7 @@ echo "</Livox>" >> "$THIS_RESULT"
 cp "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}.bag-$NOW"
 
 # copy mapping result to Experiment folder
-cp "/home/liu/livox/github-livox-sdk/Livox_automatic_calibration/data/H-LiDAR-Map-data/H_LiDAR_Map.pcd" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}-mapping.pcd"
+cp "/home/liu/livox/Livox_automatic_calibration/data/H-LiDAR-Map-data/H_LiDAR_Map.pcd" "/home/liu/Desktop/Experiment_${DATE}/${EXPERIMENT}-mapping.pcd"
 
 NOW=$(date +"%T")
 echo -e "All calibration complete(finish = $NOW)" | tee -a "$LOG"
