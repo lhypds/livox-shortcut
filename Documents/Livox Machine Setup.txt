@@ -1,0 +1,55 @@
+
+1. Install Ubuntu 16.04
+
+2. Install XMing in Windows
+
+3. Install ROS
+
+	sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+	sudo apt install curl # if you haven't already installed curl
+	curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
+	sudo apt-get update
+
+	sudo apt-get install ros-kinetic-desktop-full
+
+	echo "source /opt/ros/kinetic/setup.bash" >> ~/.bashrc
+	source ~/.bashrc
+
+	sudo apt install python-rosdep python-rosinstall python-rosinstall-generator python-wstool build-essential
+	sudo rosdep init
+	rosdep update
+
+3. File tree
+
+	mkdir code
+	mkdir livox
+	cd livox
+	mkdir out
+
+4. Install Livox-SDK
+
+	cd livox
+	git clone https://github.com/Livox-SDK/Livox-SDK
+	cd ~/livox/Livox-SDK/build
+	cmake ..
+	make
+	sudo make install
+
+5. Install livox_ros_driver
+
+	mkdir -p ~/ws_livox/src
+	git clone https://github.com/Livox-SDK/livox_ros_driver.git ws_livox/src # 
+	cd ~/ws_livox
+	catkin_make
+
+4. Code
+
+	cd ~/livox
+	git clone https://github.com/lhypds/livox-shortcut
+	git clone https://github.com/Livox-SDK/livox_mapping.git
+	cd ..
+
+5. Livox Mapping
+
+	refer sdk-livox-mapping.txt
+
