@@ -38,6 +38,7 @@
 5. Install livox_ros_driver
 
 	mkdir -p ~/ws_livox/src
+	cd ~/ws_livox/src
 	git clone https://github.com/Livox-SDK/livox_ros_driver.git ws_livox/src # 
 	cd ~/ws_livox
 	catkin_make
@@ -49,7 +50,21 @@
 	git clone https://github.com/Livox-SDK/livox_mapping.git
 	cd ..
 
+5. Livox_Viewer
+
+	mkdir Livox_Viewer
+	cd Livox_Viewer/
+	wget https://terra-1-g.djicdn.com/65c028cd298f4669a7f0e40e50ba1131/Download/update/Livox_Viewer_For_Linux_Ubuntu16.04_x64_0.10.0.tar.gz
+	tar -xf Livox_Viewer_For_Linux_Ubuntu16.04_x64_0.10.0.tar.gz
+
 5. Livox Mapping
 
-	refer sdk-livox-mapping.txt
+	# refer sdk-livox-mapping.txt
+	mkdir -p ~/catkin_ws/src
+	cd ~/catkin_ws/src
+	git clone https://github.com/Livox-SDK/livox_mapping.git
+	cd ..
+	source ~/ws_livox/devel/setup.sh
+	catkin_make
+	source ~/catkin_ws/devel/setup.bash
 
